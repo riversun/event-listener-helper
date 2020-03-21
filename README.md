@@ -1,5 +1,5 @@
 # @riversun/event-listener-helper
 
-Library for strictly managing the addition and deletion of event listeners
+This library allows you to get a list of event listeners attached to the target node, confirms the existence of event listener registered on the target node, deletes all event listeners registered on the target node, registers event listeners with listener name (rather than a reference).
 
-You can get a list of registered listeners and register listeners with unique names
+These benefits can be received by calling addEventListener and removeEventListener through this library.

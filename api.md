@@ -12,7 +12,12 @@
 <a name="new_EventListenerHelper_new"></a>
 
 ### new EventListenerHelper()
-Helper class to name event listener and make it easier to delete
+This library allows you to:
+get a list of event listeners attached to the target node,
+confirms the existence of event listener registered on the target node,
+deletes all event listeners registered on the target node,
+registers event listeners with name (rather than a reference).
+These benefits can be received by calling addEventListener and removeEventListener through this library.
 
 MIT License
 
