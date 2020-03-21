@@ -9,20 +9,44 @@ export default class EventListenerHelper {
   }
 
   addEventListener(eventTarget, eventType, listener, options) {
-    // console.log(`addEventListener ${JSON.stringify(options)}`);
+    // console.log(`addEventListener listener=${listener} options=${JSON.stringify(options)}`);
+    let optionsClone = null;
+    if (options) {
+      optionsClone = this._cloneJson(options);
+    }
     if (arguments.length > 4) {
       throw Error('Too many arguments');
     }
-    this._checkTypeOfOptions(options);
+    this._checkTypeOfOptions(optionsClone);
     let listenerName = null;
-    if (options && options.listenerName) {
-      listenerName = options.listenerName;
+    if (optionsClone && optionsClone.listenerName) {
+      listenerName = optionsClone.listenerName;
+    }
+    let onceWrapperListener = null;
+    if (optionsClone && optionsClone.once) {
+      // Once is handled on this library side,
+      // so remove it from options
+      // so that it is not evaluated by addEventListener.
+      // Set callbackOnce instead
+      delete optionsClone.once;
+      optionsClone.callbackOnce = true;
+      onceWrapperListener = (e) => {
+        listener(e);
+        // remove listener
+        // listener is null to extract the listener information registered with listenerName
+        this.removeEventListener(eventTarget, eventType, null, optionsClone);
+      };
     }
     const result = {
       listenerName: null,
       success: true,
     };
-    eventTarget.addEventListener(eventType, listener, options);
+    // When using once, wrap the listener specified by the user
+    if (onceWrapperListener) {
+      eventTarget.addEventListener(eventType, onceWrapperListener, optionsClone);
+    } else {
+      eventTarget.addEventListener(eventType, listener, optionsClone);
+    }
     let listenerMapForEle = this.listeners.get(eventTarget);// returns Map
     if (!listenerMapForEle) {
       listenerMapForEle = new Map();
@@ -36,15 +60,26 @@ export default class EventListenerHelper {
 
     if (listenerName !== null) {
       // listenerName not equals null
-      listenerFuncsForName.set(listenerName, listener);
+      listenerFuncsForName.set(listenerName,
+        {
+          listener,
+          onceListener: onceWrapperListener,
+          options: optionsClone,
+        });
       result.listenerName = listenerName;
     } else {
       // listenerName equals null
       const randomListenerName = `listener-${this.listenerNum}`;
-      listenerFuncsForName.set(randomListenerName, listener);
+      listenerFuncsForName.set(randomListenerName,
+        {
+          listener,
+          onceListener: onceWrapperListener,
+          options: optionsClone,
+        });
       result.listenerName = randomListenerName;
       this.listenerNum += 1;
     }
+
     return result;
   }
 
@@ -72,20 +107,38 @@ export default class EventListenerHelper {
     }
     // check listener function exists
     if (listener === null) {
-      const listenerFunc = listenerFuncsForName.get(listenerName);
-      if (!listenerFunc) {
+      const listenerInfo = listenerFuncsForName.get(listenerName);
+      if (!listenerInfo) {
         result.message = `DOM element ${eventTarget}(id=${eventTarget.id}) doesn't have "${eventType}" listener "${listenerName}"`;
         return result;
       }
       listenerFuncsForName.delete(listenerName);
-      eventTarget.removeEventListener(eventType, listenerFunc, options);
+
+      if (options && options.callbackOnce) {
+        eventTarget.removeEventListener(eventType, listenerInfo.onceListener, options);
+      } else {
+        eventTarget.removeEventListener(eventType, listenerInfo.listener, options);
+      }
       result.success = true;
     }
     if (listener) {
-      if (this._isMapHasValue(listenerFuncsForName, listener)) {
+      const searchKey = 'listener';
+      const searchVal = listener;
+      // The specified listener object is stored as part of the map value.
+      // Gets the map key to search for that map value.
+      const resultListenerName = this._searchKeyInValueContent(listenerFuncsForName, searchKey, searchVal);
+      if (resultListenerName) {
+        const storedListenerInfo = listenerFuncsForName.get(resultListenerName);
+        // const storedListener = storedListenerInfo.listener;
+        const storedOnceListener = storedListenerInfo.onceListener;
+        const storedOptions = storedListenerInfo.options;
         // Whether the listener is registered.
         // Listeners not registered with this method are not deleted
-        eventTarget.removeEventListener(eventType, listener, options);
+        if (storedOnceListener) {
+          eventTarget.removeEventListener(eventType, storedOnceListener, storedOptions);
+        } else {
+          eventTarget.removeEventListener(eventType, listener, storedOptions);
+        }
         result.success = true;
       } else {
         result.success = false;
@@ -97,8 +150,13 @@ export default class EventListenerHelper {
     return result;
   }
 
-  _isMapHasValue(map, value) {
-    return Array.from(map.values()).includes(value);
+  _searchKeyInValueContent(map, searchKey, searchValue) {
+    for (const [k, v] of map) {
+      if (v[searchKey] === searchValue) {
+        return k;
+      }
+    }
+    return null;
   }
 
   _checkTypeOfOptions(options) {
@@ -114,5 +172,9 @@ export default class EventListenerHelper {
       throw new Error(`Type of ${typeof options} is not accepted as the fourth argument you specify.
       If you want to specify options, specify an object like {capture: true, listenerName:'my-listener-01'}.`);
     }
+  }
+
+  _cloneJson(value) {
+    return JSON.parse(JSON.stringify(value));
   }
 }

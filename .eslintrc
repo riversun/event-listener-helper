@@ -8,6 +8,7 @@
     "browser": true,
     "node": true
   },
+  //https://github.com/airbnb/javascript/blob/master/packages/eslint-config-airbnb-base/rules/style.js
   "rules": {
     "class-methods-use-this": "off",
     "no-new": "off",
@@ -15,6 +16,18 @@
       "error",
       {
         "allowAfterThis": true
+      }
+    ],
+    "max-len": [
+      "error",
+      120,
+      2,
+      {
+        "ignoreUrls": true,
+        "ignoreComments": false,
+        "ignoreRegExpLiterals": true,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true
       }
     ],
     "no-restricted-syntax": [

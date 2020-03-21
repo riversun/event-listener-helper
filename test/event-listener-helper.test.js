@@ -6,67 +6,165 @@ describe('ListenerManager', () => {
   ///addEventListener///////////////////////////////////////////
   describe('addEventListener()', () => {
 
-    test('addListener with listener name', (done) => {
+    test('Add eventListener with listener name', (done) => {
 
       const lm = new EventListenerHelper();
       createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
       const listenerName = 'my-test-listener';
       const options = {};
       options.listenerName = listenerName;
-      const btn = document.querySelector('#myButton');
+
       const result = lm.addEventListener(btn, 'click', (event) => {
         expect(event.target.id)
-            .toBe('myButton');
+          .toBe('myButton');
         done();
       }, options);
 
-      expect(result.success)
-          .toBe(true);
-      expect(result.listenerName)
-          .toBe(listenerName);
+      expect(result.success).toBe(true);
+      expect(result.listenerName).toBe(listenerName);
 
       btn.click();
     });
-    test('addListener mutiple with listener names', (done) => {
+
+    test('Add multiple eventListeners with listener name', (done) => {
 
       const lm = new EventListenerHelper();
       createHTMLForListenerManager();
       const btn = document.querySelector('#myButton');
-      for (let i = 0; i < 3; i += 1) {
+      const numOfListeners = 10;
+      for (let i = 0; i < numOfListeners; i += 1) {
         const listenerName = `my-test-listener-${i}`;
         const options = {};
         options.listenerName = listenerName;
 
         const result = lm.addEventListener(btn, 'click', (event) => {
-          expect(event.target.id)
-              .toBe('myButton');
-          done();
+          expect(event.target.id).toBe('myButton');
+          if (i + 1 === numOfListeners) {
+            done();
+          }
         }, options);
-
-        expect(result.success)
-            .toBe(true);
-        expect(result.listenerName)
-            .toBe(listenerName);
+        expect(result.success).toBe(true);
+        expect(result.listenerName).toBe(listenerName);
       }
-
       btn.click();
     });
-    test('addListener add anonymous listener', (done) => {
+
+    test('Add anonymous eventListener', (done) => {
 
       const lm = new EventListenerHelper();
       createHTMLForListenerManager();
       const btn = document.querySelector('#myButton');
       const result = lm.addEventListener(btn, 'click', (event) => {
-        expect(event.target.id)
-            .toBe('myButton');
+        expect(event.target.id).toBe('myButton');
         done();
       });
-      expect(result.success)
-          .toBe(true);
-      expect(result.listenerName)
-          .toEqual(expect.anything());
+      expect(result.success).toBe(true);
+      expect(result.listenerName).toEqual(expect.anything());
 
       btn.click();
+
+    });
+
+    test('Add eventListener with listener name with "capture" options', (done) => {
+
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+
+      const listenerName = 'my-test-listener';
+      const options = { capture: true };
+      options.listenerName = listenerName;
+
+      const result = lm.addEventListener(btn, 'click', (event) => {
+        expect(event.target.id).toBe('myButton');
+        done();
+      }, options);
+
+      expect(result.success).toBe(true);
+      expect(result.listenerName).toBe(listenerName);
+
+      btn.click();
+    });
+
+    test('Add and remove eventListener with listener name with "capture" options', (done) => {
+
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+
+      const listenerName = 'my-test-listener';
+      const options = { capture: true };
+      options.listenerName = listenerName;
+
+      // add listener
+      lm.addEventListener(btn, 'click', (event) => {
+        throw new Error('Error');
+      }, options);
+
+      // remove listener with option
+      lm.removeEventListener(btn, 'click', null, options);
+
+      btn.click();
+
+      setTimeout(() => {
+        done();
+      }, 100);
+
+    });
+    test('Add "once" eventListener, if once is specified, make sure it is called-back only once', (done) => {
+
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+
+      const listenerName = 'my-test-listener';
+      const options = { once: true };
+      options.listenerName = listenerName;
+
+      const numOfEventCall = 10;
+      let counter = 0;
+
+      // add listener
+      lm.addEventListener(btn, 'click', (event) => {
+        expect(event.target.id).toBe('myButton');
+        counter++;
+        if (counter == numOfEventCall) {
+          throw Error(`Called ${counter} times even though "once:true" is specified.`);
+        }
+      }, options);
+
+      for (let i = 0; i < numOfEventCall; i += 1) {
+        btn.click();
+      }
+
+      setTimeout(() => {
+        done();
+      }, 100);
+
+    });
+
+    test('Add "once" eventListener, if once is specified, make sure it is called-back only once', (done) => {
+
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+
+      const listenerName = 'my-test-listener-once';
+      const options = { once: true };
+      options.listenerName = listenerName;
+      const listenerFunc = (event) => {
+        throw Error(`Once listener is not gone`);
+      };
+      // add listener
+      lm.addEventListener(btn, 'click', listenerFunc, options);
+
+      lm.removeEventListener(btn, 'click', listenerFunc);
+      btn.click();
+
+      setTimeout(() => {
+        done();
+      }, 100);
 
     });
 
@@ -153,18 +251,18 @@ describe('ListenerManager', () => {
       {
         const result = lm.removeEventListener(btn2, 'click', null, options);
         expect(result.success)
-            .toBe(false);
+          .toBe(false);
         expect(result.message)
-            .toBe('DOM element [object HTMLButtonElement](id=myButton2) doesn\'t have any listeners.');
+          .toBe('DOM element [object HTMLButtonElement](id=myButton2) doesn\'t have any listeners.');
       }
       //To remove non-exist eventName
       {
         const result = lm.removeEventListener(btn, 'hover', null, options);
 
         expect(result.success)
-            .toBe(false);
+          .toBe(false);
         expect(result.message)
-            .toBe('DOM element [object HTMLButtonElement](id=myButton) doesn\'t have "hover" listeners.');
+          .toBe('DOM element [object HTMLButtonElement](id=myButton) doesn\'t have "hover" listeners.');
 
       }
       //To remove non-exist eventName
@@ -174,9 +272,9 @@ describe('ListenerManager', () => {
 
         const result = lm.removeEventListener(btn, 'click', null, options2);
         expect(result.success)
-            .toBe(false);
+          .toBe(false);
         expect(result.message)
-            .toBe('DOM element [object HTMLButtonElement](id=myButton) doesn\'t have "click" listener "foo"');
+          .toBe('DOM element [object HTMLButtonElement](id=myButton) doesn\'t have "click" listener "foo"');
       }
 
     });
