@@ -28,6 +28,10 @@
         <article>
             <pre class="prettyprint source linenums"><code>/**
  * Helper class to name event listener and make it easier to delete
+ *
+ * MIT License
+ * @class EventListenerHelper
+ * @author Tom Misawa (riversun.org@gmail.com,https://github.com/riversun)
  */
 export default class EventListenerHelper {
   constructor() {
@@ -36,22 +40,90 @@ export default class EventListenerHelper {
     this.listenerNum = 0;
   }
 
-
+  /**
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
+   * @param {EventTarget} eventTarget
+   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.&lt;br>
+   *   &lt;p>&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget&lt;/a> by &lt;a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors&lt;/a> is licensed under &lt;a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5&lt;/a>.&lt;/p>
+   *
+   * @param {String} eventType
+   * A case-sensitive string representing the &lt;a href="/en-US/docs/Web/Events">event type&lt;/a> to listen for.
+   *
+   * @param {Function} listener
+   * The object which receives a notification (an object that implements the &lt;a href="/en-US/docs/Web/API/Event">&lt;code>Event&lt;/code>&lt;/a> interface)
+   * when an event of the specified type occurs. This must be an object implementing the
+   * &lt;a href="/en-US/docs/Web/API/EventListener">&lt;code>EventListener&lt;/code>&lt;/a> interface, or a JavaScript &lt;a href="/en-US/docs/JavaScript/Guide/Functions">function&lt;/a>.
+   * See &lt;a href="#The_event_listener_callback">The event listener callback&lt;/a> for details on the callback itself.
+   *
+   * @param {Object=} options An options object specifies characteristics about the event listener.
+   * The available options are:&lt;br>
+   &lt;dl>
+   &lt;dt>&lt;code>&lt;var>&lt;b>listenerName&lt;/b>&lt;/var>&lt;/code>&lt;/dt>
+   &lt;dd>A &lt;code>String&lt;/code>By assigning listenerName, the specified listener function (callback function) can be specified.In other words, it is possible to retrieve the listener function later
+   using this listenerName as a key.listenerName must be unique.
+   &lt;/dd>
+   &lt;dt>&lt;code>&lt;var>capture&lt;/var>&lt;/code>&lt;/dt>
+   &lt;dd>A &lt;a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">&lt;code>Boolean&lt;/code>&lt;/a> indicating that events of this type will be dispatched to the registered &lt;code>listener&lt;/code>
+   before being dispatched to any &lt;code>EventTarget&lt;/code> beneath it in the DOM tree.
+   &lt;/dd>
+   &lt;dt>&lt;code>&lt;var>once&lt;/var>&lt;/code>&lt;/dt>
+   &lt;dd>A &lt;a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">&lt;code>Boolean&lt;/code>&lt;/a> indicating that the &lt;code>&lt;var>listener&lt;/var>&lt;/code> should be invoked at most once after being
+   added. If &lt;code>true&lt;/code>, the &lt;code>&lt;var>listener&lt;/var>&lt;/code> would be automatically removed when invoked.
+   &lt;/dd>
+   &lt;dt>&lt;code>&lt;var>passive&lt;/var>&lt;/code>&lt;/dt>
+   &lt;dd>A &lt;a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">&lt;code>Boolean&lt;/code>&lt;/a> which, if &lt;code>true&lt;/code>, indicates that the function specified by &lt;code>&lt;var>listener&lt;/var>&lt;/code>
+   will never call &lt;a href="/en-US/docs/Web/API/Event/preventDefault">&lt;code>preventDefault()&lt;/code>&lt;/a>. If a passive listener does call &lt;code>preventDefault()&lt;/code>, the user agent will do
+   nothing other than generate a console warning. See &lt;a href="#Improving_scrolling_performance_with_passive_listeners">Improving scrolling performance with passive listeners&lt;/a> to learn more.
+   &lt;/dd>
+   &lt;dt>&lt;span class="icon-only-inline" title="This API has not been standardized.">&lt;i class="icon-warning-sign"> &lt;/i>&lt;/span> &lt;code>&lt;var>mozSystemGroup&lt;/var>&lt;/code>&lt;/dt>
+   &lt;dd>A &lt;a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">&lt;code>Boolean&lt;/code>&lt;/a> indicating that the listener should be added to the system group. Available only in code
+   running in XBL or in the &lt;a href="/en-US/docs/Glossary/chrome">chrome&lt;/a> of the Firefox browser.
+   &lt;/dd>
+   &lt;/dl>
+   &lt;p>&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener">addEventListener&lt;/a> by &lt;a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors&lt;/a> is licensed under &lt;a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5&lt;/a>.&lt;/p>
+   * @returns {}
+   */
   addEventListener(eventTarget, eventType, listener, options) {
-    // console.log(`addEventListener ${JSON.stringify(options)}`);
+    // console.log(`addEventListener listener=${listener} options=${JSON.stringify(options)}`);
+    let optionsClone = null;
+    if (options) {
+      optionsClone = this._cloneJson(options);
+    }
     if (arguments.length > 4) {
       throw Error('Too many arguments');
     }
-    this._checkTypeOfOptions(options);
+    this._checkTypeOfOptions(optionsClone);
     let listenerName = null;
-    if (options &amp;&amp; options.listenerName) {
-      listenerName = options.listenerName;
+    if (optionsClone &amp;&amp; optionsClone.listenerName) {
+      listenerName = optionsClone.listenerName;
+    }
+    let onceWrapperListener = null;
+    if (optionsClone &amp;&amp; optionsClone.once) {
+      // Once is handled on this library side,
+      // so remove it from options
+      // so that it is not evaluated by addEventListener.
+      // Set callbackOnce instead
+      delete optionsClone.once;
+      optionsClone.callbackOnce = true;
+      onceWrapperListener = (e) => {
+        listener(e);
+        // remove listener
+        // listener is null to extract the listener information registered with listenerName
+        this.removeEventListener(eventTarget, eventType, null, optionsClone);
+      };
     }
     const result = {
       listenerName: null,
       success: true,
     };
-    eventTarget.addEventListener(eventType, listener, options);
+    // When using once, wrap the listener specified by the user
+    if (onceWrapperListener) {
+      eventTarget.addEventListener(eventType, onceWrapperListener, optionsClone);
+    } else {
+      eventTarget.addEventListener(eventType, listener, optionsClone);
+    }
     let listenerMapForEle = this.listeners.get(eventTarget);// returns Map
     if (!listenerMapForEle) {
       listenerMapForEle = new Map();
@@ -65,20 +137,34 @@ export default class EventListenerHelper {
 
     if (listenerName !== null) {
       // listenerName not equals null
-      listenerFuncsForName.set(listenerName, listener);
+      if (listenerFuncsForName.has(listenerName)) {
+        throw Error(`The listenerName "${listenerName}" is already used for the specified event type ${eventType}`);
+      }
+      listenerFuncsForName.set(listenerName,
+        {
+          listener,
+          onceListener: onceWrapperListener,
+          options: optionsClone,
+        });
       result.listenerName = listenerName;
     } else {
       // listenerName equals null
       const randomListenerName = `listener-${this.listenerNum}`;
-      listenerFuncsForName.set(randomListenerName, listener);
+      listenerFuncsForName.set(randomListenerName,
+        {
+          listener,
+          onceListener: onceWrapperListener,
+          options: optionsClone,
+        });
       result.listenerName = randomListenerName;
       this.listenerNum += 1;
     }
+
     return result;
   }
 
   removeEventListener(eventTarget, eventType, listener, options) {
-    console.log(`removeEventListener ${JSON.stringify(options)}`);
+    // console.log(`removeEventListener ${JSON.stringify(options)}`);
     this._checkTypeOfOptions(options);
     let listenerName = null;
     if (options &amp;&amp; options.listenerName) {
@@ -101,20 +187,42 @@ export default class EventListenerHelper {
     }
     // check listener function exists
     if (listener === null) {
-      const listenerFunc = listenerFuncsForName.get(listenerName);
-      if (!listenerFunc) {
+      if (!listenerName) {
+        result.message = 'options.listenerName is not found';
+        return result;
+      }
+      const listenerInfo = listenerFuncsForName.get(listenerName);
+      if (!listenerInfo) {
         result.message = `DOM element ${eventTarget}(id=${eventTarget.id}) doesn't have "${eventType}" listener "${listenerName}"`;
         return result;
       }
       listenerFuncsForName.delete(listenerName);
-      eventTarget.removeEventListener(eventType, listenerFunc, options);
+
+      if (options &amp;&amp; options.callbackOnce) {
+        eventTarget.removeEventListener(eventType, listenerInfo.onceListener, options);
+      } else {
+        eventTarget.removeEventListener(eventType, listenerInfo.listener, options);
+      }
       result.success = true;
     }
     if (listener) {
-      if (this._isMapHasValue(listenerFuncsForName, listener)) {
+      const searchKey = 'listener';
+      const searchVal = listener;
+      // The specified listener object is stored as part of the map value.
+      // Gets the map key to search for that map value.
+      const resultListenerName = this._searchKeyInValueContent(listenerFuncsForName, searchKey, searchVal);
+      if (resultListenerName) {
+        const storedListenerInfo = listenerFuncsForName.get(resultListenerName);
+        // const storedListener = storedListenerInfo.listener;
+        const storedOnceListener = storedListenerInfo.onceListener;
+        const storedOptions = storedListenerInfo.options;
         // Whether the listener is registered.
         // Listeners not registered with this method are not deleted
-        eventTarget.removeEventListener(eventType, listener, options);
+        if (storedOnceListener) {
+          eventTarget.removeEventListener(eventType, storedOnceListener, storedOptions);
+        } else {
+          eventTarget.removeEventListener(eventType, listener, storedOptions);
+        }
         result.success = true;
       } else {
         result.success = false;
@@ -126,8 +234,13 @@ export default class EventListenerHelper {
     return result;
   }
 
-  _isMapHasValue(map, value) {
-    return Array.from(map.values()).includes(value);
+  _searchKeyInValueContent(map, searchKey, searchValue) {
+    for (const [k, v] of map) {
+      if (v[searchKey] === searchValue) {
+        return k;
+      }
+    }
+    return null;
   }
 
   _checkTypeOfOptions(options) {
@@ -144,6 +257,10 @@ export default class EventListenerHelper {
       If you want to specify options, specify an object like {capture: true, listenerName:'my-listener-01'}.`);
     }
   }
+
+  _cloneJson(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
 }
 </code></pre>
         </article>
@@ -155,13 +272,13 @@ export default class EventListenerHelper {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EventListenerHelper.html">EventListenerHelper</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Mar 21 2020 00:16:57 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Mar 21 2020 21:09:51 GMT+0900 (東京 (標準時))
 </footer>
 
 <script> prettyPrint(); </script>
