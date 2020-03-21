@@ -41,6 +41,9 @@ export default class EventListenerHelper {
   }
 
   /**
+   * By using EventListenerHelper#addEventListener instead of EventTarget#addEventListener,
+   * you can get the registered listener from EventListenerHelper using getEventListeners,
+   * delete the individual listener by listenerName, and check the listener existence.
    * @memberof EventListenerHelper
    * @instance
    * @method
@@ -49,13 +52,10 @@ export default class EventListenerHelper {
    *   &lt;p>&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget&lt;/a> by &lt;a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors&lt;/a> is licensed under &lt;a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5&lt;/a>.&lt;/p>
    *
    * @param {String} eventType
-   * A case-sensitive string representing the &lt;a href="/en-US/docs/Web/Events">event type&lt;/a> to listen for.
+   * A string which specifies the type of event for which to remove an event listener.
    *
    * @param {Function} listener
-   * The object which receives a notification (an object that implements the &lt;a href="/en-US/docs/Web/API/Event">&lt;code>Event&lt;/code>&lt;/a> interface)
-   * when an event of the specified type occurs. This must be an object implementing the
-   * &lt;a href="/en-US/docs/Web/API/EventListener">&lt;code>EventListener&lt;/code>&lt;/a> interface, or a JavaScript &lt;a href="/en-US/docs/JavaScript/Guide/Functions">function&lt;/a>.
-   * See &lt;a href="#The_event_listener_callback">The event listener callback&lt;/a> for details on the callback itself.
+   &lt;dd>The &lt;a href="/en-US/docs/Web/API/EventListener">&lt;code>EventListener&lt;/code>&lt;/a> function of the event handler to remove from the event target.&lt;/dd>
    *
    * @param {Object=} options An options object specifies characteristics about the event listener.
    * The available options are:&lt;br>
@@ -64,22 +64,12 @@ export default class EventListenerHelper {
    &lt;dd>A &lt;code>String&lt;/code>By assigning listenerName, the specified listener function (callback function) can be specified.In other words, it is possible to retrieve the listener function later
    using this listenerName as a key.listenerName must be unique.
    &lt;/dd>
-   &lt;dt>&lt;code>&lt;var>capture&lt;/var>&lt;/code>&lt;/dt>
-   &lt;dd>A &lt;a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">&lt;code>Boolean&lt;/code>&lt;/a> indicating that events of this type will be dispatched to the registered &lt;code>listener&lt;/code>
-   before being dispatched to any &lt;code>EventTarget&lt;/code> beneath it in the DOM tree.
-   &lt;/dd>
-   &lt;dt>&lt;code>&lt;var>once&lt;/var>&lt;/code>&lt;/dt>
-   &lt;dd>A &lt;a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">&lt;code>Boolean&lt;/code>&lt;/a> indicating that the &lt;code>&lt;var>listener&lt;/var>&lt;/code> should be invoked at most once after being
-   added. If &lt;code>true&lt;/code>, the &lt;code>&lt;var>listener&lt;/var>&lt;/code> would be automatically removed when invoked.
-   &lt;/dd>
-   &lt;dt>&lt;code>&lt;var>passive&lt;/var>&lt;/code>&lt;/dt>
-   &lt;dd>A &lt;a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">&lt;code>Boolean&lt;/code>&lt;/a> which, if &lt;code>true&lt;/code>, indicates that the function specified by &lt;code>&lt;var>listener&lt;/var>&lt;/code>
-   will never call &lt;a href="/en-US/docs/Web/API/Event/preventDefault">&lt;code>preventDefault()&lt;/code>&lt;/a>. If a passive listener does call &lt;code>preventDefault()&lt;/code>, the user agent will do
-   nothing other than generate a console warning. See &lt;a href="#Improving_scrolling_performance_with_passive_listeners">Improving scrolling performance with passive listeners&lt;/a> to learn more.
-   &lt;/dd>
-   &lt;dt>&lt;span class="icon-only-inline" title="This API has not been standardized.">&lt;i class="icon-warning-sign"> &lt;/i>&lt;/span> &lt;code>&lt;var>mozSystemGroup&lt;/var>&lt;/code>&lt;/dt>
-   &lt;dd>A &lt;a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">&lt;code>Boolean&lt;/code>&lt;/a> indicating that the listener should be added to the system group. Available only in code
-   running in XBL or in the &lt;a href="/en-US/docs/Glossary/chrome">chrome&lt;/a> of the Firefox browser.
+   &lt;dt>&lt;var>options&lt;/var> &lt;span class="inlineIndicator optional optionalInline">Optional&lt;/span>&lt;/dt>
+   &lt;dd>An options object that specifies characteristics about the event listener. The available options are:
+   &lt;ul>
+   &lt;li>&lt;code>capture&lt;/code>: A&amp;nbsp;&lt;a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">&lt;code>Boolean&lt;/code>&lt;/a> that indicates that events of this type will be dispatched to the registered &lt;code>listener&lt;/code>&amp;nbsp;before being dispatched to any &lt;code>EventTarget&lt;/code> beneath it in the DOM tree.&lt;/li>
+   &lt;li>&lt;span class="icon-only-inline" title="This API has not been standardized.">&lt;i class="icon-warning-sign"> &lt;/i>&lt;/span>&lt;code> mozSystemGroup&lt;/code>: Available only in code running in XBL or in Firefox' chrome, it is a &lt;a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">&lt;code>Boolean&lt;/code>&lt;/a> defining if the listener is added to the system group.&lt;/li>
+   &lt;/ul>
    &lt;/dd>
    &lt;/dl>
    &lt;p>&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener">addEventListener&lt;/a> by &lt;a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors&lt;/a> is licensed under &lt;a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5&lt;/a>.&lt;/p>
@@ -163,6 +153,42 @@ export default class EventListenerHelper {
     return result;
   }
 
+  /**
+   * The EventListenerHelper#removeEventListener method removes from the EventTarget an event listener previously registered with EventListenerHelper#addEventListener.
+   The event listener to be removed is identified using option.
+   listenerName and a combination of the event type, the event listener function itself,
+   and various optional options that may affect the matching process; see Matching event listeners for removal
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
+   * @param {EventTarget} eventTarget
+   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.&lt;br>
+   *   &lt;p>&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget&lt;/a> by &lt;a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors&lt;/a> is licensed under &lt;a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5&lt;/a>.&lt;/p>
+   *
+   * @param {String} eventType
+   * A string which specifies the type of event for which to remove an event listener.
+   *
+   * @param {Function} listener
+   * The object which receives a notification (an object that implements the &lt;a href="/en-US/docs/Web/API/Event">&lt;code>Event&lt;/code>&lt;/a> interface)
+   * when an event of the specified type occurs. This must be an object implementing the
+   * &lt;a href="/en-US/docs/Web/API/EventListener">&lt;code>EventListener&lt;/code>&lt;/a> interface, or a JavaScript &lt;a href="/en-US/docs/JavaScript/Guide/Functions">function&lt;/a>.
+   * See &lt;a href="#The_event_listener_callback">The event listener callback&lt;/a> for details on the callback itself.
+   *
+   * @param {Object=} options An options object specifies characteristics about the event listener.
+   * The available options are:&lt;br>
+   &lt;dl>
+   &lt;dt>&lt;code>&lt;var>&lt;b>listenerName&lt;/b>&lt;/var>&lt;/code>&lt;/dt>
+   &lt;dd>A &lt;code>String&lt;/code>By assigning listenerName, the specified listener function (callback function) can be specified.In other words, it is possible to retrieve the listener function later
+   using this listenerName as a key.listenerName must be unique.
+   &lt;/dd>
+   &lt;dt>&lt;code>&lt;var>capture&lt;/var>&lt;/code>&lt;/dt>
+   &lt;dd>A &lt;a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">&lt;code>Boolean&lt;/code>&lt;/a> indicating that events of this type will be dispatched to the registered &lt;code>listener&lt;/code>
+   before being dispatched to any &lt;code>EventTarget&lt;/code> beneath it in the DOM tree.
+   &lt;/dd>
+   &lt;/dl>
+   &lt;p>&lt;a href="https://developer.mozilla.org/ja/docs/Web/API/EventTarget/removeEventListener">removeEventListener&lt;/a> by &lt;a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors&lt;/a> is licensed under &lt;a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5&lt;/a>.&lt;/p>
+   * @returns {}
+   */
   removeEventListener(eventTarget, eventType, listener, options) {
     // console.log(`removeEventListener ${JSON.stringify(options)}`);
     this._checkTypeOfOptions(options);
@@ -278,7 +304,7 @@ export default class EventListenerHelper {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Mar 21 2020 21:16:43 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Mar 21 2020 23:45:42 GMT+0900 (東京 (標準時))
 </footer>
 
 <script> prettyPrint(); </script>
