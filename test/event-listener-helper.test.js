@@ -27,6 +27,25 @@ describe('ListenerManager', () => {
       btn.click();
     });
 
+    test('Add eventListeners with same listener name', () => {
+
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+      const listenerName = 'my-test-listener';
+
+      const testFunc = () => {
+        for (let i = 0; i < 2; i += 1) {
+          const options = {};
+          options.listenerName = listenerName;
+          const result = lm.addEventListener(btn, 'click', (event) => {
+            //do nothing
+          }, options);
+        }
+      };
+      expect(testFunc).toThrowError('already used for the specified event type');
+    });
+
     test('Add multiple eventListeners with listener name', (done) => {
 
       const lm = new EventListenerHelper();

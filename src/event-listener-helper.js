@@ -60,6 +60,9 @@ export default class EventListenerHelper {
 
     if (listenerName !== null) {
       // listenerName not equals null
+      if (listenerFuncsForName.has(listenerName)) {
+        throw Error(`The listenerName "${listenerName}" is already used for the specified event type ${eventType}`);
+      }
       listenerFuncsForName.set(listenerName,
         {
           listener,
