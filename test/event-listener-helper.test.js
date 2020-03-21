@@ -233,6 +233,24 @@ describe('ListenerManager', () => {
       }, 100);
     });
 
+    test('remove named listener without listenerName', () => {
+
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const listenerName = 'my-test-listener';
+      const options = {};
+      //options.listenerName = listenerName;
+      const btn = document.querySelector('#myButton');
+      lm.addEventListener(btn, 'click', () => {
+        throw new Error('Listener is not removed!');
+      }, options);
+      const result = lm.removeEventListener(btn, 'click', null, options);
+      if (result.success === false) {
+        expect(result.message).toMatch('options.listenerName is not found');
+      }
+
+    });
+
     test('remove non-existing listener by eventName', () => {
 
       const lm = new EventListenerHelper();

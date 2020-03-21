@@ -107,6 +107,10 @@ export default class EventListenerHelper {
     }
     // check listener function exists
     if (listener === null) {
+      if (!listenerName) {
+        result.message = 'options.listenerName is not found';
+        return result;
+      }
       const listenerInfo = listenerFuncsForName.get(listenerName);
       if (!listenerInfo) {
         result.message = `DOM element ${eventTarget}(id=${eventTarget.id}) doesn't have "${eventType}" listener "${listenerName}"`;
