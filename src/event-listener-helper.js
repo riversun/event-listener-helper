@@ -17,10 +17,54 @@ export default class EventListenerHelper {
     this.listenerNum = 0;
   }
 
+  hasEventListener(eventTarget, eventType) {
+    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
+    if (!listenerMapForEle) {
+      return false;
+    }
+    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
+    if (!listenerFuncsForName) {
+      return false;
+    }
+    return true;
+  }
+
+  getEventListeners(eventTarget, eventType) {
+    const result = [];
+    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
+    if (!listenerMapForEle) {
+      return result;
+    }
+    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
+    if (!listenerFuncsForName) {
+      return result;
+    }
+    for (const listenerInfo of listenerFuncsForName.values()) {
+      const resListenerInfo = {};
+      let optionsRes = null;
+      const optionsOrg = listenerInfo.options;
+      if (optionsOrg) {
+        optionsRes = {};
+        resListenerInfo.options = optionsRes;
+        if (optionsOrg.capture) {
+          optionsRes.capture = optionsOrg.capture;
+        }
+        if (optionsOrg.callbackOnce) {
+          optionsRes.once = optionsOrg.callbackOnce;
+        }
+        if (optionsOrg.listenerName) {
+          optionsRes.listenerName = optionsOrg.listenerName;
+        }
+      }
+      resListenerInfo.listener = listenerInfo.listener;
+      Object.freeze(optionsRes);
+      Object.freeze(resListenerInfo);
+      result.push(resListenerInfo);
+    }
+    return result;
+  }
+
   /**
-   * By using EventListenerHelper#addEventListener instead of EventTarget#addEventListener,
-   * you can get the registered listener from EventListenerHelper using getEventListeners,
-   * delete the individual listener by listenerName, and check the listener existence.
    * @memberof EventListenerHelper
    * @instance
    * @method
@@ -29,10 +73,13 @@ export default class EventListenerHelper {
    *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
    *
    * @param {String} eventType
-   * A string which specifies the type of event for which to remove an event listener.
+   * A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
    *
    * @param {Function} listener
-   <dd>The <a href="/en-US/docs/Web/API/EventListener"><code>EventListener</code></a> function of the event handler to remove from the event target.</dd>
+   * The object which receives a notification (an object that implements the <a href="/en-US/docs/Web/API/Event"><code>Event</code></a> interface)
+   * when an event of the specified type occurs. This must be an object implementing the
+   * <a href="/en-US/docs/Web/API/EventListener"><code>EventListener</code></a> interface, or a JavaScript <a href="/en-US/docs/JavaScript/Guide/Functions">function</a>.
+   * See <a href="#The_event_listener_callback">The event listener callback</a> for details on the callback itself.
    *
    * @param {Object=} options An options object specifies characteristics about the event listener.
    * The available options are:<br>
@@ -41,12 +88,13 @@ export default class EventListenerHelper {
    <dd>A <code>String</code>By assigning listenerName, the specified listener function (callback function) can be specified.In other words, it is possible to retrieve the listener function later
    using this listenerName as a key.listenerName must be unique.
    </dd>
-   <dt><var>options</var> <span class="inlineIndicator optional optionalInline">Optional</span></dt>
-   <dd>An options object that specifies characteristics about the event listener. The available options are:
-   <ul>
-   <li><code>capture</code>: A&nbsp;<a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean"><code>Boolean</code></a> that indicates that events of this type will be dispatched to the registered <code>listener</code>&nbsp;before being dispatched to any <code>EventTarget</code> beneath it in the DOM tree.</li>
-   <li><span class="icon-only-inline" title="This API has not been standardized."><i class="icon-warning-sign"> </i></span><code> mozSystemGroup</code>: Available only in code running in XBL or in Firefox' chrome, it is a <a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean"><code>Boolean</code></a> defining if the listener is added to the system group.</li>
-   </ul>
+   <dt><code><var>capture</var></code></dt>
+   <dd>A <a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean"><code>Boolean</code></a> indicating that events of this type will be dispatched to the registered <code>listener</code>
+   before being dispatched to any <code>EventTarget</code> beneath it in the DOM tree.
+   </dd>
+   <dt><code><var>once</var></code></dt>
+   <dd>A <a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean"><code>Boolean</code></a> indicating that the <code><var>listener</var></code> should be invoked at most once after being
+   added. If <code>true</code>, the <code><var>listener</var></code> would be automatically removed when invoked.
    </dd>
    </dl>
    <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener">addEventListener</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
@@ -117,6 +165,11 @@ export default class EventListenerHelper {
     } else {
       // listenerName equals null
       const randomListenerName = `listener-${this.listenerNum}`;
+
+      if (!optionsClone) {
+        optionsClone = {};
+      }
+      optionsClone.listenerName = randomListenerName;
       listenerFuncsForName.set(randomListenerName,
         {
           listener,

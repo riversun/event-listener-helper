@@ -170,12 +170,6 @@ MIT License
 
 
 
-<div class="description">
-    By using EventListenerHelper#addEventListener instead of EventTarget#addEventListener,
-you can get the registered listener from EventListenerHelper using getEventListeners,
-delete the individual listener by listenerName, and check the listener existence.
-</div>
-
 
 
 
@@ -267,7 +261,7 @@ delete the individual listener by listenerName, and check the listener existence
 
             
 
-            <td class="description last">A string which specifies the type of event for which to remove an event listener.</td>
+            <td class="description last">A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.</td>
         </tr>
 
     
@@ -298,7 +292,10 @@ delete the individual listener by listenerName, and check the listener existence
 
             
 
-            <td class="description last"><dd>The <a href="/en-US/docs/Web/API/EventListener"><code>EventListener</code></a> function of the event handler to remove from the event target.</dd></td>
+            <td class="description last">The object which receives a notification (an object that implements the <a href="/en-US/docs/Web/API/Event"><code>Event</code></a> interface)
+when an event of the specified type occurs. This must be an object implementing the
+<a href="/en-US/docs/Web/API/EventListener"><code>EventListener</code></a> interface, or a JavaScript <a href="/en-US/docs/JavaScript/Guide/Functions">function</a>.
+See <a href="#The_event_listener_callback">The event listener callback</a> for details on the callback itself.</td>
         </tr>
 
     
@@ -338,12 +335,13 @@ The available options are:<br>
    <dd>A <code>String</code>By assigning listenerName, the specified listener function (callback function) can be specified.In other words, it is possible to retrieve the listener function later
    using this listenerName as a key.listenerName must be unique.
    </dd>
-   <dt><var>options</var> <span class="inlineIndicator optional optionalInline">Optional</span></dt>
-   <dd>An options object that specifies characteristics about the event listener. The available options are:
-   <ul>
-   <li><code>capture</code>: A&nbsp;<a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean"><code>Boolean</code></a> that indicates that events of this type will be dispatched to the registered <code>listener</code>&nbsp;before being dispatched to any <code>EventTarget</code> beneath it in the DOM tree.</li>
-   <li><span class="icon-only-inline" title="This API has not been standardized."><i class="icon-warning-sign"> </i></span><code> mozSystemGroup</code>: Available only in code running in XBL or in Firefox' chrome, it is a <a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean"><code>Boolean</code></a> defining if the listener is added to the system group.</li>
-   </ul>
+   <dt><code><var>capture</var></code></dt>
+   <dd>A <a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean"><code>Boolean</code></a> indicating that events of this type will be dispatched to the registered <code>listener</code>
+   before being dispatched to any <code>EventTarget</code> beneath it in the DOM tree.
+   </dd>
+   <dt><code><var>once</var></code></dt>
+   <dd>A <a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean"><code>Boolean</code></a> indicating that the <code><var>listener</var></code> should be invoked at most once after being
+   added. If <code>true</code>, the <code><var>listener</var></code> would be automatically removed when invoked.
    </dd>
    </dl>
    <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener">addEventListener</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p></td>
@@ -387,7 +385,7 @@ The available options are:<br>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line55">line 55</a>
+        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line103">line 103</a>
     </li></ul></dd>
     
 
@@ -654,7 +652,7 @@ The available options are:<br>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line169">line 169</a>
+        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line222">line 222</a>
     </li></ul></dd>
     
 
@@ -712,7 +710,7 @@ The available options are:<br>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Mar 22 2020 00:01:26 GMT+0900 (東京 (標準時))
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Mar 22 2020 21:24:19 GMT+0900 (東京 (標準時))
 </footer>
 
 <script> prettyPrint(); </script>

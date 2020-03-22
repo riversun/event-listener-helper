@@ -27,7 +27,7 @@ describe('ListenerManager', () => {
       btn.click();
     });
 
-    test('Add eventListeners with same listener name', () => {
+    test('Add eventListeners with same listener name. duplicate', () => {
 
       const lm = new EventListenerHelper();
       createHTMLForListenerManager();
@@ -385,5 +385,123 @@ describe('ListenerManager', () => {
       }, 100);
     });
 
+  });
+
+  ///getEventListeners///////////////////////////////////////////
+  describe('getEventListeners()', () => {
+
+    test('Make sure that the listener registered with options can be get correctly', () => {
+
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+
+      {
+        const func1 = (event) => {
+          return 'my-test-listener-1';
+        };
+        lm.addEventListener(btn, 'click', func1, { listenerName: 'my-test-listener-1' });
+
+        const func2 = (event) => {
+          return 'my-test-listener-2';
+        };
+        lm.addEventListener(btn, 'click', func2, { listenerName: 'my-test-listener-2', capture: true });
+
+        const func3 = (event) => {
+          return 'my-test-listener-3';
+        };
+        lm.addEventListener(btn, 'click', func3, { listenerName: 'my-test-listener-3', once: true });
+      }
+
+      const listeners = lm.getEventListeners(btn, 'click');
+
+      expect(listeners.length).toBe(3);
+
+      const testTemp_listenerNames = [];
+      const testTemp_listenerNameOptionMap = new Map();
+
+      for (const listenerInfo of listeners) {
+
+        // listenerInfo is frozen (read only)
+        expect(() => {
+          listenerInfo.listener = null;
+        }).toThrowError('Cannot assign to read only property');
+
+        // options is also frozen
+        expect(() => {
+          listenerInfo.options.listenerName = 'abc';
+        }).toThrowError('Cannot assign to read only property');
+
+        const listener = listenerInfo.listener;
+        const options = listenerInfo.options;
+        const listenerName = options.listenerName;
+
+        //Check that the listener function you intend to register is registered properly
+        expect(listener()).toBe(listenerName);
+        testTemp_listenerNames.push(listenerName);
+        testTemp_listenerNameOptionMap.set(listenerName, options);
+      }
+
+      //Verify that all listener names are registered
+      expect(testTemp_listenerNames).toHaveLength(3);
+      expect(testTemp_listenerNames).toEqual(expect.arrayContaining(['my-test-listener-1', 'my-test-listener-2', 'my-test-listener-3']));
+      expect(testTemp_listenerNameOptionMap.get('my-test-listener-2').capture).toBe(true);
+      expect(testTemp_listenerNameOptionMap.get('my-test-listener-3').once).toBe(true);
+
+    });
+
+    test('Make sure that the listener registered without name without options can be get correctly,Check that the listener name is automatically assigned', () => {
+
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+
+      {
+        const func1 = (event) => {
+          return 'result-my-test-listener-1';
+        };
+        lm.addEventListener(btn, 'click', func1, { listenerName: 'my-test-listener-1' });
+
+
+        const func2 = (event) => {
+          return 'result-my-test-listener-2';
+        };
+        lm.addEventListener(btn, 'click', func2);
+
+        const func3 = (event) => {
+          return 'result-my-test-listener-3';
+        };
+        lm.addEventListener(btn, 'click', func3, {});
+
+        const func4 = (event) => {
+          return 'result-my-test-listener-4';
+        };
+        lm.addEventListener(btn, 'click', func4, { capture: true });
+
+        const func5 = (event) => {
+          return 'result-my-test-listener-5';
+        };
+        lm.addEventListener(btn, 'click', func5, { capture: true, once: true });
+      }
+
+      const listeners = lm.getEventListeners(btn, 'click');
+
+      expect(listeners.length).toBe(5);
+
+      const testTemp_listenerNames = [];
+      const testTemp_funcResultOptionMap = new Map();
+      for (const listenerInfo of listeners) {
+
+        const listener = listenerInfo.listener;
+        const options = listenerInfo.options;
+        testTemp_funcResultOptionMap.set(listener(), options)
+      }
+      expect(testTemp_funcResultOptionMap.get('result-my-test-listener-1').listenerName).toBeDefined();
+      expect(testTemp_funcResultOptionMap.get('result-my-test-listener-2').listenerName).toBeDefined();
+      expect(testTemp_funcResultOptionMap.get('result-my-test-listener-3').listenerName).toBeDefined();
+      expect(testTemp_funcResultOptionMap.get('result-my-test-listener-4').listenerName).toBeDefined();
+      expect(testTemp_funcResultOptionMap.get('result-my-test-listener-5').listenerName).toBeDefined();
+      //console.log(listeners);
+    });
   });
 });
