@@ -17,19 +17,69 @@ export default class EventListenerHelper {
     this.listenerNum = 0;
   }
 
+  /**
+   * Search for a listener using the listener name of the listener you want to find
+   * @param {EventTarget} eventTarget
+   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
+   *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
+   *
+   * @param {String} eventType
+   * A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
+   *
+   * @param {String} listenerName The listener name of the listener you want to find
+
+   * @returns {function} Returns undefined if no listener function is found
+   */
+  getEventListenerByName(eventTarget, eventType, listenerName) {
+    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
+    if (!listenerMapForEle) {
+      return listenerMapForEle;
+    }
+    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
+    if (!listenerFuncsForName) {
+      return listenerFuncsForName;
+    }
+    return listenerFuncsForName.get(listenerName);
+  }
+
+  /**
+   * Returns whether or not even one listener of the specified eventType is registered in the specified eventTarget
+   * @param eventTarget
+   * @param eventType
+   * @returns {boolean}
+   */
   hasEventListener(eventTarget, eventType) {
+    if (arguments.length !== 2) {
+      throw Error('Only two arguments can be specified');
+    }
     const listenerMapForEle = this.listeners.get(eventTarget);// returns map
     if (!listenerMapForEle) {
       return false;
     }
     const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
-    if (!listenerFuncsForName) {
+    if (!listenerFuncsForName || listenerFuncsForName.size === 0) {
       return false;
     }
     return true;
   }
 
+  /**
+   * Returns all listener information of the specified eventType registered in the specified eventTarget.
+   * Note that returning listener information object is immutable.
+   *
+   * @param {EventTarget} eventTarget
+   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
+   *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
+   *
+   * @param {String} eventType
+   * A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
+   *
+   * @returns [eventListenerInfo]
+   */
   getEventListeners(eventTarget, eventType) {
+    if (arguments.length !== 2) {
+      throw Error('Only two arguments can be specified');
+    }
     const result = [];
     const listenerMapForEle = this.listeners.get(eventTarget);// returns map
     if (!listenerMapForEle) {
@@ -107,7 +157,7 @@ export default class EventListenerHelper {
       optionsClone = this._cloneJson(options);
     }
     if (arguments.length > 4) {
-      throw Error('Too many arguments');
+      throw Error('Too many arguments. Number of arguments can be specified 4.');
     }
     this._checkTypeOfOptions(optionsClone);
     let listenerName = null;
@@ -272,6 +322,8 @@ export default class EventListenerHelper {
         // const storedListener = storedListenerInfo.listener;
         const storedOnceListener = storedListenerInfo.onceListener;
         const storedOptions = storedListenerInfo.options;
+
+        listenerFuncsForName.delete(resultListenerName);
         // Whether the listener is registered.
         // Listeners not registered with this method are not deleted
         if (storedOnceListener) {

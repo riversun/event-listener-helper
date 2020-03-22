@@ -1,3 +1,25 @@
+## Classes
+
+<dl>
+<dt><a href="#EventListenerHelper">EventListenerHelper</a></dt>
+<dd></dd>
+</dl>
+
+## Functions
+
+<dl>
+<dt><a href="#getEventListenerByName">getEventListenerByName(eventTarget, eventType, listenerName)</a> ⇒ <code>function</code></dt>
+<dd><p>Search for a listener using the listener name of the listener you want to find</p>
+</dd>
+<dt><a href="#hasEventListener">hasEventListener(eventTarget, eventType)</a> ⇒ <code>boolean</code></dt>
+<dd><p>Returns whether or not even one listener of the specified eventType is registered in the specified eventTarget</p>
+</dd>
+<dt><a href="#getEventListeners">getEventListeners(eventTarget, eventType)</a> ⇒</dt>
+<dd><p>Returns all listener information of the specified eventType registered in the specified eventTarget.
+Note that returning listener information object is immutable.</p>
+</dd>
+</dl>
+
 <a name="EventListenerHelper"></a>
 
 ## EventListenerHelper
@@ -49,4 +71,44 @@ The EventListenerHelper#removeEventListener method removes from the EventTarget 
 | eventType | <code>String</code> | A string which specifies the type of event for which to remove an event listener. |
 | listener | <code>function</code> | The object which receives a notification (an object that implements the <a href="/en-US/docs/Web/API/Event"><code>Event</code></a> interface) when an event of the specified type occurs. This must be an object implementing the <a href="/en-US/docs/Web/API/EventListener"><code>EventListener</code></a> interface, or a JavaScript <a href="/en-US/docs/JavaScript/Guide/Functions">function</a>. See <a href="#The_event_listener_callback">The event listener callback</a> for details on the callback itself. |
 | [options] | <code>Object</code> | An options object specifies characteristics about the event listener. The available options are:<br>    <dl>    <dt><code><var><b>listenerName</b></var></code></dt>    <dd>A <code>String</code>By assigning listenerName, the specified listener function (callback function) can be specified.In other words, it is possible to retrieve the listener function later    using this listenerName as a key.listenerName must be unique.    </dd>    <dt><code><var>capture</var></code></dt>    <dd>A <a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean"><code>Boolean</code></a> indicating that events of this type will be dispatched to the registered <code>listener</code>    before being dispatched to any <code>EventTarget</code> beneath it in the DOM tree.    </dd>    </dl>    <p><a href="https://developer.mozilla.org/ja/docs/Web/API/EventTarget/removeEventListener">removeEventListener</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p> |
+
+<a name="getEventListenerByName"></a>
+
+## getEventListenerByName(eventTarget, eventType, listenerName) ⇒ <code>function</code>
+Search for a listener using the listener name of the listener you want to find
+
+**Kind**: global function  
+**Returns**: <code>function</code> - Returns undefined if no listener function is found  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| eventTarget | <code>EventTarget</code> | EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p> |
+| eventType | <code>String</code> | A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for. |
+| listenerName | <code>String</code> | The listener name of the listener you want to find |
+
+<a name="hasEventListener"></a>
+
+## hasEventListener(eventTarget, eventType) ⇒ <code>boolean</code>
+Returns whether or not even one listener of the specified eventType is registered in the specified eventTarget
+
+**Kind**: global function  
+
+| Param |
+| --- |
+| eventTarget | 
+| eventType | 
+
+<a name="getEventListeners"></a>
+
+## getEventListeners(eventTarget, eventType) ⇒
+Returns all listener information of the specified eventType registered in the specified eventTarget.
+Note that returning listener information object is immutable.
+
+**Kind**: global function  
+**Returns**: [eventListenerInfo]  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| eventTarget | <code>EventTarget</code> | EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p> |
+| eventType | <code>String</code> | A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for. |
 
