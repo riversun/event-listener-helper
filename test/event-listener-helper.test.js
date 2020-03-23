@@ -163,7 +163,7 @@ describe('ListenerManager', () => {
 
     });
 
-    test('Add "once" eventListener, if once is specified, make sure it is called-back only once', (done) => {
+    test('remove "once" eventListener with only listener in arg', (done) => {
 
       const lm = new EventListenerHelper();
       createHTMLForListenerManager();
@@ -186,7 +186,37 @@ describe('ListenerManager', () => {
       }, 100);
 
     });
+    test('Once called once, automatically check if the event information has been deleted from the library cache', (done) => {
 
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+
+      const listenerName = 'my-test-listener';
+      const options = { once: true };
+      options.listenerName = listenerName;
+
+      let isCalledOnce = false;
+      lm.addEventListener(btn, 'click', (event) => {
+        expect(event.target.id).toBe('myButton');
+        if (isCalledOnce) {
+          throw Error(`Called ${counter} times even though "once:true" is specified.`);
+        }
+        isCalledOnce = true;
+      }, options);
+
+      expect(lm.hasEventListener(btn, 'click')).toBe(true);
+      btn.click();
+      expect(lm.hasEventListener(btn, 'click')).toBe(false);
+      btn.click();
+      expect(lm.hasEventListener(btn, 'click')).toBe(false);
+
+
+      setTimeout(() => {
+        done();
+      }, 100);
+
+    });
     test('Check illegal options type:string', () => {
       const lm = new EventListenerHelper();
       createHTMLForListenerManager();
