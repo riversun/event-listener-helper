@@ -18,132 +18,20 @@ export default class EventListenerHelper {
   }
 
   /**
-   * Get a listener with the specified eventTarget, eventType and listenerName.
-   The listenerName must be unique for one eventTarget and eventType combination,
-   but it does not have to be unique for different eventTargets or different eventTypes.
+   * Get a listener definition matching the specified eventTarget and eventType (optional).
+   * Please note that the return value is immutable.
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
    * @param {EventTarget} eventTarget
    * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
    *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
    *
-   * @param {String} eventType
+   * @param {String=} eventType
    * A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
    *
-   * @param {String} listenerName The listener name of the listener you want to find
-
-   * @returns {function} Returns null if no listener function is found
-   */
-  getEventListenerByName(eventTarget, eventType, listenerName) {
-    if (arguments.length !== 3) {
-      throw Error('Only 3 arguments can be specified');
-    }
-    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
-    if (!listenerMapForEle) {
-      return null;
-    }
-    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
-    if (!listenerFuncsForName) {
-      return null;
-    }
-    const listenerInfo = listenerFuncsForName.get(listenerName);
-    // Converts an internal listenerInfo to a user-friendly listenerInfo
-    const result = this._getUserFriendlyListenerInfo(listenerInfo);
-    return result;
-  }
-
-  /**
-   * Returns whether a listenerName exists for the specified eventTarget and eventType.
-   * @param {EventTarget} eventTarget
-   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
-   *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
-   *
-   * @param {String} eventType
-   * A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
-   *
-   * @param {String} listenerName The listener name of the listener you want to find
-
-   * @returns {boolean}
-   */
-  hasEventListenerName(eventTarget, eventType, listenerName) {
-    if (arguments.length !== 3) {
-      throw Error('Only 3 arguments can be specified');
-    }
-    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
-    if (!listenerMapForEle) {
-      return false;
-    }
-    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
-    if (!listenerFuncsForName) {
-      return false;
-    }
-    const listenerInfo = listenerFuncsForName.get(listenerName);
-    if (listenerInfo) {
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Returns whether or not there are more than one event listener for the given eventTarget and eventType.
-   * @param eventTarget
-   * @param eventType
-   * @returns {boolean}
-   */
-  hasEventListener(eventTarget, eventType) {
-    if (arguments.length !== 2) {
-      throw Error('Only two arguments can be specified');
-    }
-    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
-    if (!listenerMapForEle) {
-      return false;
-    }
-    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
-    if (!listenerFuncsForName || listenerFuncsForName.size === 0) {
-      return false;
-    }
-    return true;
-  }
-
-  /**
-   * Returns all listener information of the specified eventType registered in the specified eventTarget.
-   * Note that returning listener information object is immutable.
-   *
-   * @param {EventTarget} eventTarget
-   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
-   *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
-   *
-   * @param {String} eventType
-   * A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
-   *
-   * @returns [eventListenerInfo]
-   */
-  getEventListeners(eventTarget, eventType) {
-    if (arguments.length !== 2) {
-      throw Error('Only two arguments can be specified');
-    }
-    const result = [];
-    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
-    if (!listenerMapForEle) {
-      return result;
-    }
-    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
-    if (!listenerFuncsForName) {
-      return result;
-    }
-    for (const listenerInfo of listenerFuncsForName.values()) {
-      // Converts an internal listenerInfo to a user-friendly listenerInfo
-      const resListenerInfo = this._getUserFriendlyListenerInfo(listenerInfo);
-      result.push(resListenerInfo);
-    }
-    return result;
-  }
-
-  /**
-   * Get all listeners for all event types registered to an eventTarget
-   * @param {EventTarget} eventTarget
-   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
-   *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
    * @returns {}
-   * Example result:<br><code><pre>
+   * Example of the returned value when only eventTarget is specified:<br><code><pre>
    [
    {
       eventType:click,
@@ -177,14 +65,50 @@ export default class EventListenerHelper {
    }
    ]
    </pre></code>
+   <br>
+   Example of returned value when eventType is also specified as an argument:<br><code><pre>
+   [
+   {
+      options:{
+         listenerName:my-test-listener-1
+      },
+      listener:func1
+   },
+   {
+      options:{
+         capture:true,
+         listenerName:my-test-listener-2
+      },
+      listener:func2
+   },
+   {
+      options:{
+         once:true,
+         listenerName:my-test-listener-3
+      },
+      listener:func3
+   }
+   ]
+   </pre></code>
    */
-  getTargetEventListeners(eventTarget) {
+  getEventListeners(eventTarget, eventType) {
+    const result = [];
+    if (!eventTarget) {
+      return result;
+    }
+    if (!eventType) {
+      return this._getEventListenersWith1Arg(eventTarget);
+    }
+    return this._getEventListenersWith2Args(eventTarget, eventType);
+  }
+
+
+  _getEventListenersWith1Arg(eventTarget) {
     const result = [];
     const listenerMapForEle = this.listeners.get(eventTarget);// returns map
     if (!listenerMapForEle) {
       return result;
     }
-
     for (const [eventType, listenerFuncsForName] of listenerMapForEle) {
       const listenerInfoOfEventType = [];
       for (const listenerInfo of listenerFuncsForName.values()) {
@@ -194,6 +118,124 @@ export default class EventListenerHelper {
     }
     return result;
   }
+
+
+  _getEventListenersWith2Args(eventTarget, eventType) {
+    if (arguments.length !== 2) {
+      throw Error('Only two arguments can be specified');
+    }
+    const result = [];
+    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
+    if (!listenerMapForEle) {
+      return result;
+    }
+    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
+    if (!listenerFuncsForName) {
+      return result;
+    }
+    for (const listenerInfo of listenerFuncsForName.values()) {
+      // Converts an internal listenerInfo to a user-friendly listenerInfo
+      const resListenerInfo = this._getUserFriendlyListenerInfo(listenerInfo);
+      result.push(resListenerInfo);
+    }
+    return result;
+  }
+
+  /**
+   * Get a listener with the specified eventTarget, eventType and listenerName.
+   The listenerName must be unique for one eventTarget and eventType combination,
+   but it does not have to be unique for different eventTargets or different eventTypes.
+   * @param {EventTarget} eventTarget
+   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
+   *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
+   * @param {String} eventType
+   * A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
+   *
+   * @param {String} listenerName The listener name of the listener you want to find
+
+   * @returns {function} Returns null if no listener function is found
+   */
+  getEventListener(eventTarget, eventType, listenerName) {
+    if (arguments.length !== 3) {
+      throw Error('Only 3 arguments can be specified');
+    }
+    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
+    if (!listenerMapForEle) {
+      return null;
+    }
+    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
+    if (!listenerFuncsForName) {
+      return null;
+    }
+    const listenerInfo = listenerFuncsForName.get(listenerName);
+    // Converts an internal listenerInfo to a user-friendly listenerInfo
+    const result = this._getUserFriendlyListenerInfo(listenerInfo);
+    return result;
+  }
+
+
+  /**
+   * Returns whether or not there are more than one event listener for the given eventTarget and eventType.
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
+   * @param eventTarget
+   * @param eventType
+   * @returns {boolean}
+   */
+  hasEventListeners(eventTarget, eventType) {
+    if (arguments.length !== 2) {
+      throw Error('Only two arguments can be specified');
+    }
+    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
+    if (!listenerMapForEle) {
+      return false;
+    }
+    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
+    if (!listenerFuncsForName || listenerFuncsForName.size === 0) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Returns whether a listenerName exists for the specified eventTarget and eventType.
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
+   * @param {EventTarget} eventTarget
+   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
+   *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
+   *
+   * @param {String} eventType
+   * A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
+   *
+   * @param {String} listenerName The listener name of the listener you want to find
+
+   * @returns {boolean}
+   */
+  hasEventListener(eventTarget, eventType, listenerName) {
+    if (arguments.length !== 3) {
+      throw Error('Only 3 arguments can be specified');
+    }
+    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
+    if (!listenerMapForEle) {
+      return false;
+    }
+    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
+    if (!listenerFuncsForName) {
+      return false;
+    }
+    const listenerInfo = listenerFuncsForName.get(listenerName);
+    if (listenerInfo) {
+      return true;
+    }
+    return false;
+  }
+
 
   _getUserFriendlyListenerInfo(listenerInfo) {
     // Converts an internal listenerInfo to a user-friendly listenerInfo
@@ -358,13 +400,16 @@ export default class EventListenerHelper {
    * @param {String} eventType
    * A string which specifies the type of event for which to remove an event listener.
    *
-   * @param {Function} listener
+   * @param {Function=} listener
+   * (Either the listener or options.listenerName must be specified. If both are specified, options.listenerName takes precedence.) <br>
    * The object which receives a notification (an object that implements the <a href="/en-US/docs/Web/API/Event"><code>Event</code></a> interface)
    * when an event of the specified type occurs. This must be an object implementing the
    * <a href="/en-US/docs/Web/API/EventListener"><code>EventListener</code></a> interface, or a JavaScript <a href="/en-US/docs/JavaScript/Guide/Functions">function</a>.
    * See <a href="#The_event_listener_callback">The event listener callback</a> for details on the callback itself.
    *
-   * @param {Object=} options An options object specifies characteristics about the event listener.
+   * @param {Object=} options
+   * (Either the listener or options.listenerName must be specified. If both are specified, options.listenerName takes precedence.)<br>
+   * An options object specifies characteristics about the event listener.
    * The available options are:<br>
    <dl>
    <dt><code><var><b>listenerName</b></var></code></dt>
