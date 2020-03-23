@@ -289,6 +289,61 @@ describe('ListenerManager', () => {
       }, 100);
     });
 
+    test('remove named listener', (done) => {
+
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+
+      const listenerName = 'my-test-listener';
+      const options = {};
+      options.listenerName = listenerName;
+
+      lm.addEventListener(btn, 'click', () => {
+        throw new Error('Listener is not removed!');
+      }, options);
+
+      const result = lm.removeEventListener(btn, 'click', null, options);
+
+      if (result.success === false) {
+        console.error(JSON.stringify(result));
+        throw Error();
+      }
+
+      expect(lm.hasEventListener(btn, 'click')).toBe(false);
+
+      btn.click();
+
+      setTimeout(() => {
+        done();
+      }, 100);
+    });
+
+    test('remove  named listener, if both options.listenerName and listenerFunction are specified in removeEventListener, listenerName takes precedence', (done) => {
+
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+
+      const listenerName1 = 'my-test-listener-1';
+      const options1 = {};
+      options1.listenerName = listenerName1;
+      const listenerFunc1 = () => {
+        throw new Error('Listener1 is not removed!');
+      };
+
+      const listenerName2 = 'my-test-listener-2';
+      const options2 = {};
+      options2.listenerName = listenerName2;
+      const listenerFunc2 = () => {
+        done();
+      };
+      lm.addEventListener(btn, 'click', listenerFunc1, options1);
+      lm.addEventListener(btn, 'click', listenerFunc2, options2);
+      const result = lm.removeEventListener(btn, 'click', listenerFunc2, options1);
+      btn.click();
+    });
+
     test('remove named listener without listenerName and listenerObject will failure', () => {
 
       const lm = new EventListenerHelper();
@@ -311,7 +366,7 @@ describe('ListenerManager', () => {
       const lm = new EventListenerHelper();
       createHTMLForListenerManager();
       const btn = document.querySelector('#myButton');
-      const options = {capture:true,once:true};
+      const options = { capture: true, once: true };
 
       lm.addEventListener(btn, 'click', () => {
         throw new Error('Listener is not removed!');

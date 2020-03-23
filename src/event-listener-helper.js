@@ -291,12 +291,10 @@ export default class EventListenerHelper {
       result.message = `DOM element ${eventTarget}(id=${eventTarget.id}) doesn't have "${eventType}" listeners.`;
       return result;
     }
-    // check listener function exists
-    if (listener === null) {
-      if (!listenerName) {
-        result.message = 'options.listenerName is not found';
-        return result;
-      }
+
+    if (listenerName) {
+
+
       const listenerInfo = listenerFuncsForName.get(listenerName);
       if (!listenerInfo) {
         result.message = `DOM element ${eventTarget}(id=${eventTarget.id}) doesn't have "${eventType}" listener "${listenerName}"`;
@@ -310,33 +308,37 @@ export default class EventListenerHelper {
         eventTarget.removeEventListener(eventType, listenerInfo.listener, options);
       }
       result.success = true;
-    }
-    if (listener) {
-      const searchKey = 'listener';
-      const searchVal = listener;
-      // The specified listener object is stored as part of the map value.
-      // Gets the map key to search for that map value.
-      const resultListenerName = this._searchKeyInValueContent(listenerFuncsForName, searchKey, searchVal);
-      if (resultListenerName) {
-        const storedListenerInfo = listenerFuncsForName.get(resultListenerName);
-        // const storedListener = storedListenerInfo.listener;
-        const storedOnceListener = storedListenerInfo.onceListener;
-        const storedOptions = storedListenerInfo.options;
+    } else if (!listenerName) {
+      if (listener) {
+        const searchKey = 'listener';
+        const searchVal = listener;
+        // The specified listener object is stored as part of the map value.
+        // Gets the map key to search for that map value.
+        const resultListenerName = this._searchKeyInValueContent(listenerFuncsForName, searchKey, searchVal);
+        if (resultListenerName) {
+          const storedListenerInfo = listenerFuncsForName.get(resultListenerName);
+          // const storedListener = storedListenerInfo.listener;
+          const storedOnceListener = storedListenerInfo.onceListener;
+          const storedOptions = storedListenerInfo.options;
 
-        listenerFuncsForName.delete(resultListenerName);
-        // Whether the listener is registered.
-        // Listeners not registered with this method are not deleted
-        if (storedOnceListener) {
-          eventTarget.removeEventListener(eventType, storedOnceListener, storedOptions);
+          listenerFuncsForName.delete(resultListenerName);
+          // Whether the listener is registered.
+          // Listeners not registered with this method are not deleted
+          if (storedOnceListener) {
+            eventTarget.removeEventListener(eventType, storedOnceListener, storedOptions);
+          } else {
+            eventTarget.removeEventListener(eventType, listener, storedOptions);
+          }
+          result.success = true;
         } else {
-          eventTarget.removeEventListener(eventType, listener, storedOptions);
-        }
-        result.success = true;
-      } else {
-        result.success = false;
-        result.message = `Specified listener could not be deleted from DOM element ${eventTarget}(id=${eventTarget.id}).
+          result.success = false;
+          result.message = `Specified listener could not be deleted from DOM element ${eventTarget}(id=${eventTarget.id}).
         Since the specified listener is not registered as an event listener,
         it may have been registered outside of event-listener-helper.`;
+        }
+      } else {
+        result.message = 'options.listenerName is not found';
+        return result;
       }
     }
     return result;
