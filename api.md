@@ -23,6 +23,9 @@
 <dd><p>Returns all listener information of the specified eventType registered in the specified eventTarget.
 Note that returning listener information object is immutable.</p>
 </dd>
+<dt><a href="#getTargetEventListeners">getTargetEventListeners(eventTarget)</a> ⇒</dt>
+<dd><p>Get all listeners for all event types registered to an eventTarget</p>
+</dd>
 </dl>
 
 <a name="EventListenerHelper"></a>
@@ -131,4 +134,49 @@ Note that returning listener information object is immutable.
 | --- | --- | --- |
 | eventTarget | <code>EventTarget</code> | EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p> |
 | eventType | <code>String</code> | A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for. |
+
+<a name="getTargetEventListeners"></a>
+
+## getTargetEventListeners(eventTarget) ⇒
+Get all listeners for all event types registered to an eventTarget
+
+**Kind**: global function  
+**Returns**: Example result:<br><code><pre>
+   [
+   {
+      eventType:click,
+      listener:[
+         {
+            listener:func,
+            options:{
+               listenerName:my-test-listener-1
+            }
+         },
+         {
+            listener:func,
+            options:{
+               capture:true,
+               listenerName:my-test-listener-2
+            }
+         }
+      ]
+   },
+   {
+      eventType:mousemove,
+      listener:[
+         {
+            listener:func,
+            options:{
+               once:true,
+               listenerName:my-test-listener-3
+            }
+         }
+      ]
+   }
+   ]
+   </pre></code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| eventTarget | <code>EventTarget</code> | EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p> |
 

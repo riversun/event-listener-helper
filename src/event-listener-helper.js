@@ -137,6 +137,63 @@ export default class EventListenerHelper {
     return result;
   }
 
+  /**
+   * Get all listeners for all event types registered to an eventTarget
+   * @param {EventTarget} eventTarget
+   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
+   *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
+   * @returns {}
+   * Example result:<br><code><pre>
+   [
+   {
+      eventType:click,
+      listener:[
+         {
+            listener:func,
+            options:{
+               listenerName:my-test-listener-1
+            }
+         },
+         {
+            listener:func,
+            options:{
+               capture:true,
+               listenerName:my-test-listener-2
+            }
+         }
+      ]
+   },
+   {
+      eventType:mousemove,
+      listener:[
+         {
+            listener:func,
+            options:{
+               once:true,
+               listenerName:my-test-listener-3
+            }
+         }
+      ]
+   }
+   ]
+   </pre></code>
+   */
+  getTargetEventListeners(eventTarget) {
+    const result = [];
+    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
+    if (!listenerMapForEle) {
+      return result;
+    }
+
+    for (const [eventType, listenerFuncsForName] of listenerMapForEle) {
+      const listenerInfoOfEventType = [];
+      for (const listenerInfo of listenerFuncsForName.values()) {
+        listenerInfoOfEventType.push(this._getUserFriendlyListenerInfo(listenerInfo));
+      }
+      result.push({ eventType, listeners: listenerInfoOfEventType });
+    }
+    return result;
+  }
 
   _getUserFriendlyListenerInfo(listenerInfo) {
     // Converts an internal listenerInfo to a user-friendly listenerInfo
@@ -394,6 +451,14 @@ export default class EventListenerHelper {
     }
     return result;
   }
+
+  // removeAllEventListeners(eventTarget) {
+  //
+  // }
+
+  // removeEventListenerByName(listenerName) {
+  //
+  // }
 
   _searchKeyInValueContent(map, searchKey, searchValue) {
     for (const [k, v] of map) {

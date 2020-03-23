@@ -776,6 +776,7 @@ describe('ListenerManager', () => {
     });
   });
 
+  //getEventListenerByName
   describe('getEventListenerByName()', () => {
     test('normal', () => {
 
@@ -838,4 +839,44 @@ describe('ListenerManager', () => {
     });
   });
 
-});
+  //getTargetEventListeners
+  describe('getTargetEventListeners()', () => {
+    test('normal', () => {
+
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+      const btn2 = document.querySelector('#myButton2');
+
+      {
+        const options = { listenerName: 'my-test-listener-1' };
+        const func = () => {
+          return options.listenerName
+        };
+        lm.addEventListener(btn, 'click', func, options);
+      }
+
+      {
+        const options = { listenerName: 'my-test-listener-2', capture: true };
+        const func = () => {
+          return options.listenerName
+        };
+        lm.addEventListener(btn, 'click', func, options);
+      }
+      {
+        const options = { listenerName: 'my-test-listener-3', once: true };
+        const func = () => {
+          return options.listenerName
+        };
+        lm.addEventListener(btn, 'mousemove', func, options);
+      }
+
+      const result = lm.getTargetEventListeners(btn);
+      console.log(JSON.stringify(result));
+
+      throw Error('Need Test');
+    });
+
+  });
+})
+;
