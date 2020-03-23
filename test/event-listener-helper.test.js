@@ -710,4 +710,132 @@ describe('ListenerManager', () => {
       expect(lm.hasEventListener(btn2, 'click')).toBe(false);
     });
   });
+
+  //getEventListenerByName//////////////////////////////////////////////////////////
+  describe('getEventListenerByName()', () => {
+    test('normal', () => {
+
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+      const btn2 = document.querySelector('#myButton2');
+
+      {
+        const options = { listenerName: 'my-test-listener-1' };
+        const func = () => {
+          return options.listenerName
+        };
+        lm.addEventListener(btn, 'click', func, options);
+      }
+
+      {
+        const options = { listenerName: 'my-test-listener-2', capture: true };
+        const func = () => {
+          return options.listenerName
+        };
+        lm.addEventListener(btn, 'click', func, options);
+      }
+      {
+        const options = { listenerName: 'my-test-listener-3', once: true };
+        const func = () => {
+          return options.listenerName
+        };
+        lm.addEventListener(btn, 'mousemove', func, options);
+      }
+      {
+        const options = { listenerName: 'my-test-listener-4', once: true };
+        const func = () => {
+          return options.listenerName
+        };
+        lm.addEventListener(btn2, 'mouseover', func, options);
+      }
+
+      expect(() => {
+        lm.getEventListenerByName(btn);
+      }).toThrowError('Only 3 arguments can be specified');
+      expect(() => {
+        lm.getEventListenerByName(btn, 'click');
+      }).toThrowError('Only 3 arguments can be specified');
+
+      expect(lm.getEventListenerByName(null, 'click', 'my-test-listener-1')).toBeNull();
+      expect(lm.getEventListenerByName(btn, null, 'my-test-listener-1')).toBeNull();
+
+      expect(lm.getEventListenerByName(btn, 'click', 'my-test-listener-1').listener()).toBe('my-test-listener-1');
+
+      expect(lm.getEventListenerByName(btn, 'click', 'my-test-listener-2').listener()).toBe('my-test-listener-2');
+      expect(lm.getEventListenerByName(btn, 'click', 'my-test-listener-2').options.capture).toBe(true);
+
+      expect(lm.getEventListenerByName(btn, 'click', 'my-test-listener-3')).toBeNull();
+      expect(lm.getEventListenerByName(btn, 'mousemove', 'my-test-listener-3').listener()).toBe('my-test-listener-3');
+      expect(lm.getEventListenerByName(btn, 'mousemove', 'my-test-listener-3').options.once).toBe(true);
+
+      expect(lm.getEventListenerByName(btn, 'click', 'my-test-listener-4')).toBeNull();
+      expect(lm.getEventListenerByName(btn, 'mousemove', 'my-test-listener-4')).toBeNull();
+      expect(lm.getEventListenerByName(btn2, 'mouseover', 'my-test-listener-4').listener()).toBe('my-test-listener-4');
+      expect(lm.getEventListenerByName(btn2, 'mouseover', 'my-test-listener-4').options.once).toBe(true);
+    });
+  });
+
+  describe('getEventListenerByName()', () => {
+    test('normal', () => {
+
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+      const btn2 = document.querySelector('#myButton2');
+
+      {
+        const options = { listenerName: 'my-test-listener-1' };
+        const func = () => {
+          return options.listenerName
+        };
+        lm.addEventListener(btn, 'click', func, options);
+      }
+
+      {
+        const options = { listenerName: 'my-test-listener-2', capture: true };
+        const func = () => {
+          return options.listenerName
+        };
+        lm.addEventListener(btn, 'click', func, options);
+      }
+      {
+        const options = { listenerName: 'my-test-listener-3', once: true };
+        const func = () => {
+          return options.listenerName
+        };
+        lm.addEventListener(btn, 'mousemove', func, options);
+      }
+      {
+        const options = { listenerName: 'my-test-listener-4', once: true };
+        const func = () => {
+          return options.listenerName
+        };
+        lm.addEventListener(btn2, 'mouseover', func, options);
+      }
+
+      expect(() => {
+        lm.hasEventListenerName(btn);
+      }).toThrowError('Only 3 arguments can be specified');
+      expect(() => {
+        lm.hasEventListenerName(btn, 'click');
+      }).toThrowError('Only 3 arguments can be specified');
+
+      expect(lm.hasEventListenerName(null, 'click', 'my-test-listener-1')).toBe(false);
+      expect(lm.hasEventListenerName(btn, null, 'my-test-listener-1')).toBe(false);
+
+      expect(lm.hasEventListenerName(btn, 'click', 'my-test-listener-1')).toBe(true)
+
+      expect(lm.hasEventListenerName(btn, 'click', 'my-test-listener-2')).toBe(true)
+
+      expect(lm.hasEventListenerName(btn, 'click', 'my-test-listener-3')).toBe(false)
+      expect(lm.hasEventListenerName(btn, 'mousemove', 'my-test-listener-3')).toBe(true)
+
+      expect(lm.hasEventListenerName(btn, 'click', 'my-test-listener-4')).toBe(false)
+      expect(lm.hasEventListenerName(btn, 'mousemove', 'my-test-listener-4')).toBe(false)
+      expect(lm.hasEventListenerName(btn2, 'mouseover', 'my-test-listener-4')).toBe(true)
+
+    });
+  });
+
 });

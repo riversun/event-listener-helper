@@ -18,7 +18,9 @@ export default class EventListenerHelper {
   }
 
   /**
-   * Search for a listener using the listener name of the listener you want to find
+   * Get a listener with the specified eventTarget, eventType and listenerName.
+   The listenerName must be unique for one eventTarget and eventType combination,
+   but it does not have to be unique for different eventTargets or different eventTypes.
    * @param {EventTarget} eventTarget
    * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
    *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
@@ -28,22 +30,60 @@ export default class EventListenerHelper {
    *
    * @param {String} listenerName The listener name of the listener you want to find
 
-   * @returns {function} Returns undefined if no listener function is found
+   * @returns {function} Returns null if no listener function is found
    */
   getEventListenerByName(eventTarget, eventType, listenerName) {
+    if (arguments.length !== 3) {
+      throw Error('Only 3 arguments can be specified');
+    }
     const listenerMapForEle = this.listeners.get(eventTarget);// returns map
     if (!listenerMapForEle) {
-      return listenerMapForEle;
+      return null;
     }
     const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
     if (!listenerFuncsForName) {
-      return listenerFuncsForName;
+      return null;
     }
-    return listenerFuncsForName.get(listenerName);
+    const listenerInfo = listenerFuncsForName.get(listenerName);
+    // Converts an internal listenerInfo to a user-friendly listenerInfo
+    const result = this._getUserFriendlyListenerInfo(listenerInfo);
+    return result;
   }
 
   /**
-   * Returns whether or not even one listener of the specified eventType is registered in the specified eventTarget
+   * Returns whether a listenerName exists for the specified eventTarget and eventType.
+   * @param {EventTarget} eventTarget
+   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
+   *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
+   *
+   * @param {String} eventType
+   * A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
+   *
+   * @param {String} listenerName The listener name of the listener you want to find
+
+   * @returns {boolean}
+   */
+  hasEventListenerName(eventTarget, eventType, listenerName) {
+    if (arguments.length !== 3) {
+      throw Error('Only 3 arguments can be specified');
+    }
+    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
+    if (!listenerMapForEle) {
+      return false;
+    }
+    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
+    if (!listenerFuncsForName) {
+      return false;
+    }
+    const listenerInfo = listenerFuncsForName.get(listenerName);
+    if (listenerInfo) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Returns whether or not there are more than one event listener for the given eventTarget and eventType.
    * @param eventTarget
    * @param eventType
    * @returns {boolean}
@@ -90,29 +130,42 @@ export default class EventListenerHelper {
       return result;
     }
     for (const listenerInfo of listenerFuncsForName.values()) {
-      const resListenerInfo = {};
-      let optionsRes = null;
-      const optionsOrg = listenerInfo.options;
-      if (optionsOrg) {
-        optionsRes = {};
-        resListenerInfo.options = optionsRes;
-        if (optionsOrg.capture) {
-          optionsRes.capture = optionsOrg.capture;
-        }
-        if (optionsOrg.callbackOnce) {
-          optionsRes.once = optionsOrg.callbackOnce;
-        }
-        if (optionsOrg.listenerName) {
-          optionsRes.listenerName = optionsOrg.listenerName;
-        }
-      }
-      resListenerInfo.listener = listenerInfo.listener;
-      Object.freeze(optionsRes);
-      Object.freeze(resListenerInfo);
+      // Converts an internal listenerInfo to a user-friendly listenerInfo
+      const resListenerInfo = this._getUserFriendlyListenerInfo(listenerInfo);
       result.push(resListenerInfo);
     }
     return result;
   }
+
+
+  _getUserFriendlyListenerInfo(listenerInfo) {
+    // Converts an internal listenerInfo to a user-friendly listenerInfo
+    // For example, the callbackOnce used internally will be converted to an once as if the user had specified it.
+    if (!listenerInfo) {
+      return null;
+    }
+    const resListenerInfo = {};
+    let optionsRes = null;
+    const optionsOrg = listenerInfo.options;
+    if (optionsOrg) {
+      optionsRes = {};
+      resListenerInfo.options = optionsRes;
+      if (optionsOrg.capture) {
+        optionsRes.capture = optionsOrg.capture;
+      }
+      if (optionsOrg.callbackOnce) {
+        optionsRes.once = optionsOrg.callbackOnce;
+      }
+      if (optionsOrg.listenerName) {
+        optionsRes.listenerName = optionsOrg.listenerName;
+      }
+    }
+    resListenerInfo.listener = listenerInfo.listener;
+    Object.freeze(optionsRes);
+    Object.freeze(resListenerInfo);
+    return resListenerInfo;
+  }
+
 
   /**
    * @memberof EventListenerHelper
@@ -293,8 +346,6 @@ export default class EventListenerHelper {
     }
 
     if (listenerName) {
-
-
       const listenerInfo = listenerFuncsForName.get(listenerName);
       if (!listenerInfo) {
         result.message = `DOM element ${eventTarget}(id=${eventTarget.id}) doesn't have "${eventType}" listener "${listenerName}"`;

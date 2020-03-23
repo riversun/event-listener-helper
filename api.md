@@ -9,10 +9,15 @@
 
 <dl>
 <dt><a href="#getEventListenerByName">getEventListenerByName(eventTarget, eventType, listenerName)</a> ⇒ <code>function</code></dt>
-<dd><p>Search for a listener using the listener name of the listener you want to find</p>
+<dd><p>Get a listener with the specified eventTarget, eventType and listenerName.
+   The listenerName must be unique for one eventTarget and eventType combination,
+   but it does not have to be unique for different eventTargets or different eventTypes.</p>
+</dd>
+<dt><a href="#hasEventListenerName">hasEventListenerName(eventTarget, eventType, listenerName)</a> ⇒ <code>boolean</code></dt>
+<dd><p>Returns whether a listenerName exists for the specified eventTarget and eventType.</p>
 </dd>
 <dt><a href="#hasEventListener">hasEventListener(eventTarget, eventType)</a> ⇒ <code>boolean</code></dt>
-<dd><p>Returns whether or not even one listener of the specified eventType is registered in the specified eventTarget</p>
+<dd><p>Returns whether or not there are more than one event listener for the given eventTarget and eventType.</p>
 </dd>
 <dt><a href="#getEventListeners">getEventListeners(eventTarget, eventType)</a> ⇒</dt>
 <dd><p>Returns all listener information of the specified eventType registered in the specified eventTarget.
@@ -75,10 +80,25 @@ The EventListenerHelper#removeEventListener method removes from the EventTarget 
 <a name="getEventListenerByName"></a>
 
 ## getEventListenerByName(eventTarget, eventType, listenerName) ⇒ <code>function</code>
-Search for a listener using the listener name of the listener you want to find
+Get a listener with the specified eventTarget, eventType and listenerName.
+   The listenerName must be unique for one eventTarget and eventType combination,
+   but it does not have to be unique for different eventTargets or different eventTypes.
 
 **Kind**: global function  
-**Returns**: <code>function</code> - Returns undefined if no listener function is found  
+**Returns**: <code>function</code> - Returns null if no listener function is found  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| eventTarget | <code>EventTarget</code> | EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p> |
+| eventType | <code>String</code> | A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for. |
+| listenerName | <code>String</code> | The listener name of the listener you want to find |
+
+<a name="hasEventListenerName"></a>
+
+## hasEventListenerName(eventTarget, eventType, listenerName) ⇒ <code>boolean</code>
+Returns whether a listenerName exists for the specified eventTarget and eventType.
+
+**Kind**: global function  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -89,7 +109,7 @@ Search for a listener using the listener name of the listener you want to find
 <a name="hasEventListener"></a>
 
 ## hasEventListener(eventTarget, eventType) ⇒ <code>boolean</code>
-Returns whether or not even one listener of the specified eventType is registered in the specified eventTarget
+Returns whether or not there are more than one event listener for the given eventTarget and eventType.
 
 **Kind**: global function  
 
