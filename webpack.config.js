@@ -24,7 +24,7 @@ module.exports = (env, argv) => {
       path: path.join(__dirname, 'lib'),
       publicPath: '/',
       filename: argv.mode === 'production' ? `[name].js` : `[name].js`,
-      library: 'SortableTable',
+      library: 'EventListenerHelper',
       libraryExport: 'default',
       libraryTarget: 'umd',
       globalObject: 'this',

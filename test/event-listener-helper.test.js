@@ -999,9 +999,64 @@ describe('ListenerManager', () => {
       lm.clearEventListeners(btn, 'mousemove');
       expect(lm.getEventListeners(btn, 'mousemove').length).toBe(0);
       expect(lm.getEventListeners(btn2, 'click').length).toBe(1);
-
-
     });
   });
 
+  // clearEventListener
+  describe('clearEventListener()', () => {
+    test('default', () => {
+
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+      const btn2 = document.querySelector('#myButton2');
+
+      {
+        const options = { listenerName: 'my-test-listener-1' };
+        const func = () => {
+          throw Error(`Error occurred on listener "${options.listenerName}"`);
+        };
+        lm.addEventListener(btn, 'click', func, options);
+      }
+
+      {
+        const options = { listenerName: 'my-test-listener-2', capture: true };
+        const func = () => {
+          throw Error(`Error occurred on listener "${options.listenerName}"`);
+        };
+        lm.addEventListener(btn, 'click', func, options);
+      }
+      {
+        const options = { listenerName: 'my-test-listener-3', once: true };
+        const func = () => {
+          throw Error(`Error occurred on listener "${options.listenerName}"`);
+        };
+        lm.addEventListener(btn, 'mousemove', func, options);
+      }
+      {
+        const options = { listenerName: 'my-test-listener-4', once: true };
+        const func = () => {
+          throw Error(`Error occurred on listener "${options.listenerName}"`);
+        };
+        lm.addEventListener(btn2, 'mouseover', func, options);
+      }
+      {
+        const options = { listenerName: 'my-test-listener-5', once: true };
+        const func = () => {
+          throw Error(`Error occurred on listener "${options.listenerName}"`);
+        };
+        lm.addEventListener(btn2, 'click', func, options);
+      }
+
+      expect(lm.getEventListeners(btn, 'click').length).toBe(2);
+      expect(lm.hasEventListener(btn, 'click', 'my-test-listener-1')).toBe(true);
+      lm.clearEventListener(btn, 'click','my-test-listener-1');
+      expect(lm.hasEventListener(btn, 'click','my-test-listener-1')).toBe(false);
+      expect(lm.getEventListeners(btn, 'click').length).toBe(1);
+
+      lm.clearEventListener(btn, 'click','my-test-listener-2');
+      expect(lm.getEventListeners(btn, 'click').length).toBe(0);
+
+    });
+  });
 });

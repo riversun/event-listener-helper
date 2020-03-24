@@ -18,6 +18,241 @@ export default class EventListenerHelper {
   }
 
   /**
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
+   * @param {EventTarget} eventTarget
+   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
+   *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
+   *
+   * @param {String} eventType
+   * A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
+   *
+   * @param {Function} listener
+   * The object which receives a notification (an object that implements the <a href="/en-US/docs/Web/API/Event"><code>Event</code></a> interface)
+   * when an event of the specified type occurs. This must be an object implementing the
+   * <a href="/en-US/docs/Web/API/EventListener"><code>EventListener</code></a> interface, or a JavaScript <a href="/en-US/docs/JavaScript/Guide/Functions">function</a>.
+   * See <a href="#The_event_listener_callback">The event listener callback</a> for details on the callback itself.
+   *
+   * @param {Object=} options An options object specifies characteristics about the event listener.
+   * The available options are:<br>
+   <dl>
+   <dt><code><var><b>listenerName</b></var></code></dt>
+   <dd>A <code>String</code>By assigning listenerName, the specified listener function (callback function) can be specified.In other words, it is possible to retrieve the listener function later
+   using this listenerName as a key.listenerName must be unique.
+   </dd>
+   <dt><code><var>capture</var></code></dt>
+   <dd>A <a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean"><code>Boolean</code></a> indicating that events of this type will be dispatched to the registered <code>listener</code>
+   before being dispatched to any <code>EventTarget</code> beneath it in the DOM tree.
+   </dd>
+   <dt><code><var>once</var></code></dt>
+   <dd>A <a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean"><code>Boolean</code></a> indicating that the <code><var>listener</var></code> should be invoked at most once after being
+   added. If <code>true</code>, the <code><var>listener</var></code> would be automatically removed when invoked.
+   </dd>
+   </dl>
+   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener">addEventListener</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
+   * @returns {}
+   */
+  addEventListener(eventTarget, eventType, listener, options) {
+    // console.log(`addEventListener listener=${listener} options=${JSON.stringify(options)}`);
+    let optionsClone = null;
+    if (options) {
+      optionsClone = this._cloneJson(options);
+    }
+    if (arguments.length > 4) {
+      throw Error('Too many arguments. Number of arguments can be specified 4.');
+    }
+    this._checkTypeOfOptions(optionsClone);
+    let listenerName = null;
+    if (optionsClone && optionsClone.listenerName) {
+      listenerName = optionsClone.listenerName;
+    }
+    let onceWrapperListener = null;
+    if (optionsClone && optionsClone.once) {
+      // Once is handled on this library side,
+      // so remove it from options
+      // so that it is not evaluated by addEventListener.
+      // Set callbackOnce instead
+      delete optionsClone.once;
+      optionsClone.callbackOnce = true;
+      onceWrapperListener = (e) => {
+        listener(e);
+        // remove listener
+        // listener is null to extract the listener information registered with listenerName
+        this.removeEventListener(eventTarget, eventType, null, optionsClone);
+      };
+    }
+    const result = {
+      listenerName: null,
+      success: true,
+    };
+    // When using once, wrap the listener specified by the user
+    if (onceWrapperListener) {
+      eventTarget.addEventListener(eventType, onceWrapperListener, optionsClone);
+    } else {
+      eventTarget.addEventListener(eventType, listener, optionsClone);
+    }
+    let listenerMapForEle = this.listeners.get(eventTarget);// returns Map
+    if (!listenerMapForEle) {
+      listenerMapForEle = new Map();
+      this.listeners.set(eventTarget, listenerMapForEle);
+    }
+    let listenerFuncsForName = listenerMapForEle.get(eventType);// returns Map
+    if (!listenerFuncsForName) {
+      listenerFuncsForName = new Map();
+      listenerMapForEle.set(eventType, listenerFuncsForName);
+    }
+
+    if (listenerName !== null) {
+      // listenerName not equals null
+      if (listenerFuncsForName.has(listenerName)) {
+        throw Error(`The listenerName "${listenerName}" is already used for the specified event type ${eventType}`);
+      }
+      listenerFuncsForName.set(listenerName,
+        {
+          listener,
+          onceListener: onceWrapperListener,
+          options: optionsClone,
+        });
+      result.listenerName = listenerName;
+    } else {
+      // listenerName equals null
+      const randomListenerName = `listener-${this.listenerNum}`;
+
+      if (!optionsClone) {
+        optionsClone = {};
+      }
+      optionsClone.listenerName = randomListenerName;
+      listenerFuncsForName.set(randomListenerName,
+        {
+          listener,
+          onceListener: onceWrapperListener,
+          options: optionsClone,
+        });
+      result.listenerName = randomListenerName;
+      this.listenerNum += 1;
+    }
+
+    return result;
+  }
+
+
+  /**
+   * The EventListenerHelper#removeEventListener method removes from the EventTarget an event listener previously registered with EventListenerHelper#addEventListener.
+   The event listener to be removed is identified using option.
+   listenerName and a combination of the event type, the event listener function itself,
+   and various optional options that may affect the matching process; see Matching event listeners for removal
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
+   * @param {EventTarget} eventTarget
+   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
+   *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
+   *
+   * @param {String} eventType
+   * A string which specifies the type of event for which to remove an event listener.
+   *
+   * @param {Function=} listener
+   * (Either the listener or options.listenerName must be specified. If both are specified, options.listenerName takes precedence.) <br>
+   * The object which receives a notification (an object that implements the <a href="/en-US/docs/Web/API/Event"><code>Event</code></a> interface)
+   * when an event of the specified type occurs. This must be an object implementing the
+   * <a href="/en-US/docs/Web/API/EventListener"><code>EventListener</code></a> interface, or a JavaScript <a href="/en-US/docs/JavaScript/Guide/Functions">function</a>.
+   * See <a href="#The_event_listener_callback">The event listener callback</a> for details on the callback itself.
+   *
+   * @param {Object=} options
+   * (Either the listener or options.listenerName must be specified. If both are specified, options.listenerName takes precedence.)<br>
+   * An options object specifies characteristics about the event listener.
+   * The available options are:<br>
+   <dl>
+   <dt><code><var><b>listenerName</b></var></code></dt>
+   <dd>A <code>String</code>By assigning listenerName, the specified listener function (callback function) can be specified.In other words, it is possible to retrieve the listener function later
+   using this listenerName as a key.listenerName must be unique.
+   </dd>
+   <dt><code><var>capture</var></code></dt>
+   <dd>A <a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean"><code>Boolean</code></a> indicating that events of this type will be dispatched to the registered <code>listener</code>
+   before being dispatched to any <code>EventTarget</code> beneath it in the DOM tree.
+   </dd>
+   </dl>
+   <p><a href="https://developer.mozilla.org/ja/docs/Web/API/EventTarget/removeEventListener">removeEventListener</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
+   * @returns {}
+   */
+  removeEventListener(eventTarget, eventType, listener, options) {
+    // console.log(`removeEventListener ${JSON.stringify(options)}`);
+    if (arguments.length < 3) {
+      throw Error('Three or four arguments are required.');
+    }
+    this._checkTypeOfOptions(options);
+    let listenerName = null;
+    if (options && options.listenerName) {
+      listenerName = options.listenerName;
+    }
+    const result = {
+      success: false,
+      message: 'unknown error',
+    };
+
+    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
+    if (!listenerMapForEle) {
+      result.message = `DOM element ${eventTarget}(id=${eventTarget.id}) doesn't have any listeners.`;
+      return result;
+    }
+    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
+    if (!listenerFuncsForName) {
+      result.message = `DOM element ${eventTarget}(id=${eventTarget.id}) doesn't have "${eventType}" listeners.`;
+      return result;
+    }
+
+    if (listenerName) {
+      const listenerInfo = listenerFuncsForName.get(listenerName);
+      if (!listenerInfo) {
+        result.message = `DOM element ${eventTarget}(id=${eventTarget.id}) doesn't have "${eventType}" listener "${listenerName}"`;
+        return result;
+      }
+      listenerFuncsForName.delete(listenerName);
+
+      if (options && options.callbackOnce) {
+        eventTarget.removeEventListener(eventType, listenerInfo.onceListener, options);
+      } else {
+        eventTarget.removeEventListener(eventType, listenerInfo.listener, options);
+      }
+      result.success = true;
+    } else if (!listenerName) {
+      if (listener) {
+        const searchKey = 'listener';
+        const searchVal = listener;
+        // The specified listener object is stored as part of the map value.
+        // Gets the map key to search for that map value.
+        const resultListenerName = this._searchKeyInValueContent(listenerFuncsForName, searchKey, searchVal);
+        if (resultListenerName) {
+          const storedListenerInfo = listenerFuncsForName.get(resultListenerName);
+          // const storedListener = storedListenerInfo.listener;
+          const storedOnceListener = storedListenerInfo.onceListener;
+          const storedOptions = storedListenerInfo.options;
+
+          listenerFuncsForName.delete(resultListenerName);
+          // Whether the listener is registered.
+          // Listeners not registered with this method are not deleted
+          if (storedOnceListener) {
+            eventTarget.removeEventListener(eventType, storedOnceListener, storedOptions);
+          } else {
+            eventTarget.removeEventListener(eventType, listener, storedOptions);
+          }
+          result.success = true;
+        } else {
+          result.success = false;
+          result.message = `Specified listener could not be deleted from DOM element ${eventTarget}(id=${eventTarget.id}).
+        Since the specified listener is not registered as an event listener,
+        it may have been registered outside of event-listener-helper.`;
+        }
+      } else {
+        result.message = 'options.listenerName is not found';
+        return result;
+      }
+    }
+    return result;
+  }
+
+  /**
    * Get a listener definition matching the specified eventTarget and eventType (optional).
    * Please note that the return value is immutable.
    * @memberof EventListenerHelper
@@ -271,240 +506,6 @@ export default class EventListenerHelper {
 
 
   /**
-   * @memberof EventListenerHelper
-   * @instance
-   * @method
-   * @param {EventTarget} eventTarget
-   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
-   *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
-   *
-   * @param {String} eventType
-   * A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
-   *
-   * @param {Function} listener
-   * The object which receives a notification (an object that implements the <a href="/en-US/docs/Web/API/Event"><code>Event</code></a> interface)
-   * when an event of the specified type occurs. This must be an object implementing the
-   * <a href="/en-US/docs/Web/API/EventListener"><code>EventListener</code></a> interface, or a JavaScript <a href="/en-US/docs/JavaScript/Guide/Functions">function</a>.
-   * See <a href="#The_event_listener_callback">The event listener callback</a> for details on the callback itself.
-   *
-   * @param {Object=} options An options object specifies characteristics about the event listener.
-   * The available options are:<br>
-   <dl>
-   <dt><code><var><b>listenerName</b></var></code></dt>
-   <dd>A <code>String</code>By assigning listenerName, the specified listener function (callback function) can be specified.In other words, it is possible to retrieve the listener function later
-   using this listenerName as a key.listenerName must be unique.
-   </dd>
-   <dt><code><var>capture</var></code></dt>
-   <dd>A <a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean"><code>Boolean</code></a> indicating that events of this type will be dispatched to the registered <code>listener</code>
-   before being dispatched to any <code>EventTarget</code> beneath it in the DOM tree.
-   </dd>
-   <dt><code><var>once</var></code></dt>
-   <dd>A <a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean"><code>Boolean</code></a> indicating that the <code><var>listener</var></code> should be invoked at most once after being
-   added. If <code>true</code>, the <code><var>listener</var></code> would be automatically removed when invoked.
-   </dd>
-   </dl>
-   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener">addEventListener</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
-   * @returns {}
-   */
-  addEventListener(eventTarget, eventType, listener, options) {
-    // console.log(`addEventListener listener=${listener} options=${JSON.stringify(options)}`);
-    let optionsClone = null;
-    if (options) {
-      optionsClone = this._cloneJson(options);
-    }
-    if (arguments.length > 4) {
-      throw Error('Too many arguments. Number of arguments can be specified 4.');
-    }
-    this._checkTypeOfOptions(optionsClone);
-    let listenerName = null;
-    if (optionsClone && optionsClone.listenerName) {
-      listenerName = optionsClone.listenerName;
-    }
-    let onceWrapperListener = null;
-    if (optionsClone && optionsClone.once) {
-      // Once is handled on this library side,
-      // so remove it from options
-      // so that it is not evaluated by addEventListener.
-      // Set callbackOnce instead
-      delete optionsClone.once;
-      optionsClone.callbackOnce = true;
-      onceWrapperListener = (e) => {
-        listener(e);
-        // remove listener
-        // listener is null to extract the listener information registered with listenerName
-        this.removeEventListener(eventTarget, eventType, null, optionsClone);
-      };
-    }
-    const result = {
-      listenerName: null,
-      success: true,
-    };
-    // When using once, wrap the listener specified by the user
-    if (onceWrapperListener) {
-      eventTarget.addEventListener(eventType, onceWrapperListener, optionsClone);
-    } else {
-      eventTarget.addEventListener(eventType, listener, optionsClone);
-    }
-    let listenerMapForEle = this.listeners.get(eventTarget);// returns Map
-    if (!listenerMapForEle) {
-      listenerMapForEle = new Map();
-      this.listeners.set(eventTarget, listenerMapForEle);
-    }
-    let listenerFuncsForName = listenerMapForEle.get(eventType);// returns Map
-    if (!listenerFuncsForName) {
-      listenerFuncsForName = new Map();
-      listenerMapForEle.set(eventType, listenerFuncsForName);
-    }
-
-    if (listenerName !== null) {
-      // listenerName not equals null
-      if (listenerFuncsForName.has(listenerName)) {
-        throw Error(`The listenerName "${listenerName}" is already used for the specified event type ${eventType}`);
-      }
-      listenerFuncsForName.set(listenerName,
-        {
-          listener,
-          onceListener: onceWrapperListener,
-          options: optionsClone,
-        });
-      result.listenerName = listenerName;
-    } else {
-      // listenerName equals null
-      const randomListenerName = `listener-${this.listenerNum}`;
-
-      if (!optionsClone) {
-        optionsClone = {};
-      }
-      optionsClone.listenerName = randomListenerName;
-      listenerFuncsForName.set(randomListenerName,
-        {
-          listener,
-          onceListener: onceWrapperListener,
-          options: optionsClone,
-        });
-      result.listenerName = randomListenerName;
-      this.listenerNum += 1;
-    }
-
-    return result;
-  }
-
-  /**
-   * The EventListenerHelper#removeEventListener method removes from the EventTarget an event listener previously registered with EventListenerHelper#addEventListener.
-   The event listener to be removed is identified using option.
-   listenerName and a combination of the event type, the event listener function itself,
-   and various optional options that may affect the matching process; see Matching event listeners for removal
-   * @memberof EventListenerHelper
-   * @instance
-   * @method
-   * @param {EventTarget} eventTarget
-   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
-   *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
-   *
-   * @param {String} eventType
-   * A string which specifies the type of event for which to remove an event listener.
-   *
-   * @param {Function=} listener
-   * (Either the listener or options.listenerName must be specified. If both are specified, options.listenerName takes precedence.) <br>
-   * The object which receives a notification (an object that implements the <a href="/en-US/docs/Web/API/Event"><code>Event</code></a> interface)
-   * when an event of the specified type occurs. This must be an object implementing the
-   * <a href="/en-US/docs/Web/API/EventListener"><code>EventListener</code></a> interface, or a JavaScript <a href="/en-US/docs/JavaScript/Guide/Functions">function</a>.
-   * See <a href="#The_event_listener_callback">The event listener callback</a> for details on the callback itself.
-   *
-   * @param {Object=} options
-   * (Either the listener or options.listenerName must be specified. If both are specified, options.listenerName takes precedence.)<br>
-   * An options object specifies characteristics about the event listener.
-   * The available options are:<br>
-   <dl>
-   <dt><code><var><b>listenerName</b></var></code></dt>
-   <dd>A <code>String</code>By assigning listenerName, the specified listener function (callback function) can be specified.In other words, it is possible to retrieve the listener function later
-   using this listenerName as a key.listenerName must be unique.
-   </dd>
-   <dt><code><var>capture</var></code></dt>
-   <dd>A <a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean"><code>Boolean</code></a> indicating that events of this type will be dispatched to the registered <code>listener</code>
-   before being dispatched to any <code>EventTarget</code> beneath it in the DOM tree.
-   </dd>
-   </dl>
-   <p><a href="https://developer.mozilla.org/ja/docs/Web/API/EventTarget/removeEventListener">removeEventListener</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
-   * @returns {}
-   */
-  removeEventListener(eventTarget, eventType, listener, options) {
-    // console.log(`removeEventListener ${JSON.stringify(options)}`);
-    if (arguments.length < 3) {
-      throw Error('Three or four arguments are required.');
-    }
-    this._checkTypeOfOptions(options);
-    let listenerName = null;
-    if (options && options.listenerName) {
-      listenerName = options.listenerName;
-    }
-    const result = {
-      success: false,
-      message: 'unknown error',
-    };
-
-    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
-    if (!listenerMapForEle) {
-      result.message = `DOM element ${eventTarget}(id=${eventTarget.id}) doesn't have any listeners.`;
-      return result;
-    }
-    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
-    if (!listenerFuncsForName) {
-      result.message = `DOM element ${eventTarget}(id=${eventTarget.id}) doesn't have "${eventType}" listeners.`;
-      return result;
-    }
-
-    if (listenerName) {
-      const listenerInfo = listenerFuncsForName.get(listenerName);
-      if (!listenerInfo) {
-        result.message = `DOM element ${eventTarget}(id=${eventTarget.id}) doesn't have "${eventType}" listener "${listenerName}"`;
-        return result;
-      }
-      listenerFuncsForName.delete(listenerName);
-
-      if (options && options.callbackOnce) {
-        eventTarget.removeEventListener(eventType, listenerInfo.onceListener, options);
-      } else {
-        eventTarget.removeEventListener(eventType, listenerInfo.listener, options);
-      }
-      result.success = true;
-    } else if (!listenerName) {
-      if (listener) {
-        const searchKey = 'listener';
-        const searchVal = listener;
-        // The specified listener object is stored as part of the map value.
-        // Gets the map key to search for that map value.
-        const resultListenerName = this._searchKeyInValueContent(listenerFuncsForName, searchKey, searchVal);
-        if (resultListenerName) {
-          const storedListenerInfo = listenerFuncsForName.get(resultListenerName);
-          // const storedListener = storedListenerInfo.listener;
-          const storedOnceListener = storedListenerInfo.onceListener;
-          const storedOptions = storedListenerInfo.options;
-
-          listenerFuncsForName.delete(resultListenerName);
-          // Whether the listener is registered.
-          // Listeners not registered with this method are not deleted
-          if (storedOnceListener) {
-            eventTarget.removeEventListener(eventType, storedOnceListener, storedOptions);
-          } else {
-            eventTarget.removeEventListener(eventType, listener, storedOptions);
-          }
-          result.success = true;
-        } else {
-          result.success = false;
-          result.message = `Specified listener could not be deleted from DOM element ${eventTarget}(id=${eventTarget.id}).
-        Since the specified listener is not registered as an event listener,
-        it may have been registered outside of event-listener-helper.`;
-        }
-      } else {
-        result.message = 'options.listenerName is not found';
-        return result;
-      }
-    }
-    return result;
-  }
-
-  /**
    * Remove all listeners matching the specified eventTarget and eventType (optional).
    *
    * @memberof EventListenerHelper
@@ -530,7 +531,6 @@ export default class EventListenerHelper {
         const itemListeners = item.listeners;
         for (const itemListener of itemListeners) {
           const itemOptions = itemListener.options;
-          // const refListenerName = refOptions.listenerName;
           this.removeEventListener(eventTarget, itemEventType, null, itemOptions);
         }
       }
@@ -542,13 +542,24 @@ export default class EventListenerHelper {
     }
   }
 
-  // removeAllEventListeners(eventTarget) {
-  //
-  // }
-
-  // removeEventListenerByName(listenerName) {
-  //
-  // }
+  /**
+   * Removes the eventListener with eventTarget, eventType, and listenerName as arguments.
+   The functions are the same as those of removeEventListener, except for the way to give arguments.
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
+   * @param {EventTarget} eventTarget
+   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
+   *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
+   *
+   * @param {String=} eventType
+   * A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
+   * @param {String} listenerName The listener name of the listener you want to find
+   */
+  clearEventListener(eventTarget, eventType, listenerName) {
+    const listenerDef = this.getEventListener(eventTarget, eventType, listenerName);
+    this.removeEventListener(eventTarget, eventType, null, listenerDef.options);
+  }
 
   _searchKeyInValueContent(map, searchKey, searchValue) {
     for (const [k, v] of map) {
