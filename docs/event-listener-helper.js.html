@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="EventListenerHelper.html">EventListenerHelper</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#addEventListener">addEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#getEventListener">getEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#getEventListeners">getEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#hasEventListener">hasEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#hasEventListeners">hasEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#removeEventListener">removeEventListener</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="EventListenerHelper.html">EventListenerHelper</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#addEventListener">addEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#clearEventListeners">clearEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#getEventListener">getEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#getEventListeners">getEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#hasEventListener">hasEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#hasEventListeners">hasEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#removeEventListener">removeEventListener</a></span></li>
 </nav>
 
 <div id="main">
@@ -155,7 +155,11 @@ export default class EventListenerHelper {
       for (const listenerInfo of listenerFuncsForName.values()) {
         listenerInfoOfEventType.push(this._getUserFriendlyListenerInfo(listenerInfo));
       }
-      result.push({ eventType, listeners: listenerInfoOfEventType });
+
+      if (listenerInfoOfEventType.length > 0) {
+        // evnetType:eventType,listeners:listenerInfoOfEventType
+        result.push({ eventType, listeners: listenerInfoOfEventType });
+      }
     }
     return result;
   }
@@ -467,6 +471,9 @@ export default class EventListenerHelper {
    */
   removeEventListener(eventTarget, eventType, listener, options) {
     // console.log(`removeEventListener ${JSON.stringify(options)}`);
+    if (arguments.length &lt; 3) {
+      throw Error('Three or four arguments are required.');
+    }
     this._checkTypeOfOptions(options);
     let listenerName = null;
     if (options &amp;&amp; options.listenerName) {
@@ -538,6 +545,44 @@ export default class EventListenerHelper {
     return result;
   }
 
+  /**
+   * Remove all listeners matching the specified eventTarget and eventType (optional).
+   *
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
+   * @param {EventTarget} eventTarget
+   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.&lt;br>
+   *   &lt;p>&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget&lt;/a> by &lt;a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors&lt;/a> is licensed under &lt;a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5&lt;/a>.&lt;/p>
+   *
+   * @param {String=} eventType
+   * A case-sensitive string representing the &lt;a href="/en-US/docs/Web/Events">event type&lt;/a> to listen for.
+   *
+   */
+  clearEventListeners(eventTarget, eventType) {
+    if (!eventTarget) {
+      throw Error('At least the EventTarget must be specified as an argument');
+    }
+    const items = this.getEventListeners(eventTarget, eventType);
+    if (!eventType) {
+      // only eventTarget is specified
+      for (const item of items) {
+        const itemEventType = item.eventType;
+        const itemListeners = item.listeners;
+        for (const itemListener of itemListeners) {
+          const itemOptions = itemListener.options;
+          // const refListenerName = refOptions.listenerName;
+          this.removeEventListener(eventTarget, itemEventType, null, itemOptions);
+        }
+      }
+    } else if (eventType) {
+      // both eventTarget and eventType are specified
+      for (const item of items) {
+        this.removeEventListener(eventTarget, eventType, null, item.options);
+      }
+    }
+  }
+
   // removeAllEventListeners(eventTarget) {
   //
   // }
@@ -586,7 +631,7 @@ export default class EventListenerHelper {
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Tue Mar 24 2020 00:49:44 GMT+0900 (東京 (標準時)) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Tue Mar 24 2020 19:11:00 GMT+0900 (東京 (標準時)) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

@@ -625,9 +625,17 @@ describe('ListenerManager', () => {
       }
 
       const result = lm._getEventListenersWith1Arg(btn);
-      console.log(JSON.stringify(result));
 
-      throw Error('Need Test');
+      expect(result[0].eventType).toBe('click');
+      expect(result[0].listeners[0]).not.toBeUndefined();
+      expect(result[0].listeners[0].options).not.toBeUndefined();
+      expect(result[0].listeners[0].options.listenerName).toBe('my-test-listener-1');
+      expect(result[0].listeners[1].options.listenerName).toBe('my-test-listener-2');
+      expect(result[0].listeners[1].options.capture).toBe(true);
+      expect(result[1].eventType).toBe('mousemove');
+      expect(result[1].listeners[0].options.listenerName).toBe('my-test-listener-3');
+      expect(result[1].listeners[0].options.once).toBe(true);
+
     });
 
   });
@@ -879,6 +887,121 @@ describe('ListenerManager', () => {
     });
   });
 
+  // clearEventListeners
+  describe('clearEventListeners()', () => {
+    test('test with 1 arg. specify only "eventTarget" ', () => {
 
-})
-;
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+      const btn2 = document.querySelector('#myButton2');
+
+      {
+        const options = { listenerName: 'my-test-listener-1' };
+        const func = () => {
+          throw Error(`Error occurred on listener "${options.listenerName}"`);
+        };
+        lm.addEventListener(btn, 'click', func, options);
+      }
+
+      {
+        const options = { listenerName: 'my-test-listener-2', capture: true };
+        const func = () => {
+          throw Error(`Error occurred on listener "${options.listenerName}"`);
+        };
+        lm.addEventListener(btn, 'click', func, options);
+      }
+      {
+        const options = { listenerName: 'my-test-listener-3', once: true };
+        const func = () => {
+          throw Error(`Error occurred on listener "${options.listenerName}"`);
+        };
+        lm.addEventListener(btn, 'mousemove', func, options);
+      }
+      {
+        const options = { listenerName: 'my-test-listener-4', once: true };
+        const func = () => {
+          throw Error(`Error occurred on listener "${options.listenerName}"`);
+        };
+        lm.addEventListener(btn2, 'mouseover', func, options);
+      }
+
+      console.log("before" + JSON.stringify(lm.getEventListeners(btn)));
+
+      expect(lm.getEventListeners(btn).length).toBe(2);
+      expect(lm.getEventListeners(btn2).length).toBe(1);
+
+      //clear event listeners on btn
+      lm.clearEventListeners(btn);
+
+      expect(lm.getEventListeners(btn).length).toBe(0);
+
+      //Make sure BTN2 isn't affected.
+      expect(lm.getEventListeners(btn2).length).toBe(1);
+
+      //clear event listeners on btn2
+      lm.clearEventListeners(btn2);
+      expect(lm.getEventListeners(btn2).length).toBe(0);
+
+      // Make sure there is no error when clicking the button.
+      btn.click();
+    });
+
+    test('test with 2 args. specify only "eventTarget" ', () => {
+
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+      const btn2 = document.querySelector('#myButton2');
+
+      {
+        const options = { listenerName: 'my-test-listener-1' };
+        const func = () => {
+          throw Error(`Error occurred on listener "${options.listenerName}"`);
+        };
+        lm.addEventListener(btn, 'click', func, options);
+      }
+
+      {
+        const options = { listenerName: 'my-test-listener-2', capture: true };
+        const func = () => {
+          throw Error(`Error occurred on listener "${options.listenerName}"`);
+        };
+        lm.addEventListener(btn, 'click', func, options);
+      }
+      {
+        const options = { listenerName: 'my-test-listener-3', once: true };
+        const func = () => {
+          throw Error(`Error occurred on listener "${options.listenerName}"`);
+        };
+        lm.addEventListener(btn, 'mousemove', func, options);
+      }
+      {
+        const options = { listenerName: 'my-test-listener-4', once: true };
+        const func = () => {
+          throw Error(`Error occurred on listener "${options.listenerName}"`);
+        };
+        lm.addEventListener(btn2, 'mouseover', func, options);
+      }
+      {
+        const options = { listenerName: 'my-test-listener-5', once: true };
+        const func = () => {
+          throw Error(`Error occurred on listener "${options.listenerName}"`);
+        };
+        lm.addEventListener(btn2, 'click', func, options);
+      }
+
+      // //clear event listeners on btn
+      lm.clearEventListeners(btn, 'click');
+      expect(lm.getEventListeners(btn, 'click').length).toBe(0);
+      expect(lm.getEventListeners(btn, 'mousemove').length).toBe(1);
+
+      lm.clearEventListeners(btn, 'mousemove');
+      expect(lm.getEventListeners(btn, 'mousemove').length).toBe(0);
+      expect(lm.getEventListeners(btn2, 'click').length).toBe(1);
+
+
+    });
+  });
+
+});

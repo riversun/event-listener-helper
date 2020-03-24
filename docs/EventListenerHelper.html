@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="EventListenerHelper.html">EventListenerHelper</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#addEventListener">addEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#getEventListener">getEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#getEventListeners">getEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#hasEventListener">hasEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#hasEventListeners">hasEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#removeEventListener">removeEventListener</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="EventListenerHelper.html">EventListenerHelper</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#addEventListener">addEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#clearEventListeners">clearEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#getEventListener">getEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#getEventListeners">getEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#hasEventListener">hasEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#hasEventListeners">hasEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#removeEventListener">removeEventListener</a></span></li>
 </nav>
 
 <div id="main">
@@ -210,7 +210,7 @@ MIT License
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line305">line 305</a>
+        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line309">line 309</a>
     </li></ul></dd>
     
 
@@ -445,6 +445,188 @@ The available options are:<br>
 
     
 
+    <h4 class="name" id="clearEventListeners"><span class="type-signature"></span>clearEventListeners<span class="signature">(eventTarget, eventType<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Remove all listeners matching the specified eventTarget and eventType (optional).
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line521">line 521</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>eventTarget</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>EventTarget</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
+  <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>eventType</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>String</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
     <h4 class="name" id="getEventListener"><span class="type-signature"></span>getEventListener<span class="signature">(eventTarget, eventType, listenerName)</span><span class="type-signature"> &rarr; {function}</span></h4>
 
     
@@ -490,7 +672,7 @@ The available options are:<br>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line161">line 161</a>
+        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line165">line 165</a>
     </li></ul></dd>
     
 
@@ -957,7 +1139,7 @@ Please note that the return value is immutable.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line220">line 220</a>
+        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line224">line 224</a>
     </li></ul></dd>
     
 
@@ -1166,7 +1348,7 @@ Please note that the return value is immutable.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line189">line 189</a>
+        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line193">line 193</a>
     </li></ul></dd>
     
 
@@ -1341,7 +1523,7 @@ Please note that the return value is immutable.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line427">line 427</a>
+        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line431">line 431</a>
     </li></ul></dd>
     
 
@@ -1588,7 +1770,7 @@ The available options are:<br>
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Tue Mar 24 2020 00:49:44 GMT+0900 (東京 (標準時)) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Tue Mar 24 2020 19:11:00 GMT+0900 (東京 (標準時)) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

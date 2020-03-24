@@ -114,7 +114,11 @@ export default class EventListenerHelper {
       for (const listenerInfo of listenerFuncsForName.values()) {
         listenerInfoOfEventType.push(this._getUserFriendlyListenerInfo(listenerInfo));
       }
-      result.push({ eventType, listeners: listenerInfoOfEventType });
+
+      if (listenerInfoOfEventType.length > 0) {
+        // evnetType:eventType,listeners:listenerInfoOfEventType
+        result.push({ eventType, listeners: listenerInfoOfEventType });
+      }
     }
     return result;
   }
@@ -426,6 +430,9 @@ export default class EventListenerHelper {
    */
   removeEventListener(eventTarget, eventType, listener, options) {
     // console.log(`removeEventListener ${JSON.stringify(options)}`);
+    if (arguments.length < 3) {
+      throw Error('Three or four arguments are required.');
+    }
     this._checkTypeOfOptions(options);
     let listenerName = null;
     if (options && options.listenerName) {
@@ -495,6 +502,44 @@ export default class EventListenerHelper {
       }
     }
     return result;
+  }
+
+  /**
+   * Remove all listeners matching the specified eventTarget and eventType (optional).
+   *
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
+   * @param {EventTarget} eventTarget
+   * EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
+   *   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
+   *
+   * @param {String=} eventType
+   * A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
+   *
+   */
+  clearEventListeners(eventTarget, eventType) {
+    if (!eventTarget) {
+      throw Error('At least the EventTarget must be specified as an argument');
+    }
+    const items = this.getEventListeners(eventTarget, eventType);
+    if (!eventType) {
+      // only eventTarget is specified
+      for (const item of items) {
+        const itemEventType = item.eventType;
+        const itemListeners = item.listeners;
+        for (const itemListener of itemListeners) {
+          const itemOptions = itemListener.options;
+          // const refListenerName = refOptions.listenerName;
+          this.removeEventListener(eventTarget, itemEventType, null, itemOptions);
+        }
+      }
+    } else if (eventType) {
+      // both eventTarget and eventType are specified
+      for (const item of items) {
+        this.removeEventListener(eventTarget, eventType, null, item.options);
+      }
+    }
   }
 
   // removeAllEventListeners(eventTarget) {
