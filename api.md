@@ -1,3 +1,21 @@
+## Classes
+
+<dl>
+<dt><a href="#EventListenerHelper">EventListenerHelper</a></dt>
+<dd></dd>
+</dl>
+
+## Functions
+
+<dl>
+<dt><a href="#clearAllEventListeners">clearAllEventListeners()</a></dt>
+<dd><p>Removes all registered events through the addEventListener method.</p>
+</dd>
+<dt><a href="#getAllEventTargets">getAllEventTargets()</a> ⇒</dt>
+<dd><p>Get all registered eventTargets through the #addEventListener method.</p>
+</dd>
+</dl>
+
 <a name="EventListenerHelper"></a>
 
 ## EventListenerHelper
@@ -14,6 +32,7 @@
     * [.hasEventListener(eventTarget, eventType, listenerName)](#EventListenerHelper+hasEventListener) ⇒ <code>boolean</code>
     * [.clearEventListeners(eventTarget, [eventType])](#EventListenerHelper+clearEventListeners)
     * [.clearEventListener(eventTarget, [eventType], listenerName)](#EventListenerHelper+clearEventListener)
+    * [.searchEventListenersByName(listenerName)](#EventListenerHelper+searchEventListenersByName) ⇒
 
 <a name="new_EventListenerHelper_new"></a>
 
@@ -195,3 +214,37 @@ Removes the eventListener with eventTarget, eventType, and listenerName as argum
 | [eventType] | <code>String</code> | A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for. |
 | listenerName | <code>String</code> | The listener name of the listener you want to find |
 
+<a name="EventListenerHelper+searchEventListenersByName"></a>
+
+### eventListenerHelper.searchEventListenersByName(listenerName) ⇒
+Get all listeners(listener definition) with a given listenerName.
+   Since listeners need only be unique to the eventTarget and eventType,
+   it is possible to have the same listenerName for different eventTargets and eventTypes.
+
+**Kind**: instance method of [<code>EventListenerHelper</code>](#EventListenerHelper)  
+**Returns**: <code><pre>[ { options: { listenerName: 'my-test-listener' },
+        listener: [Function: func] },
+   { options: { capture: true, listenerName: 'my-test-listener' },
+        listener: [Function: func] },
+   { options: { once: true, listenerName: 'my-test-listener' },
+        listener: [Function: func] },
+   { options: { once: true, listenerName: 'my-test-listener' },
+        listener: [Function: func] } ]
+   </pre></code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| listenerName | <code>String</code> | The listener name of the listener you want to find |
+
+<a name="clearAllEventListeners"></a>
+
+## clearAllEventListeners()
+Removes all registered events through the addEventListener method.
+
+**Kind**: global function  
+<a name="getAllEventTargets"></a>
+
+## getAllEventTargets() ⇒
+Get all registered eventTargets through the #addEventListener method.
+
+**Kind**: global function  

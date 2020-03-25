@@ -13,7 +13,7 @@
 export default class EventListenerHelper {
   constructor() {
     // this.listeners={ele1:{'click':[func1,func2]},ele2:{'click':[func1,func2]}}
-    this.listeners = new Map();
+    this.evTargetListenersMap = new Map();
     this.listenerNum = 0;
   }
 
@@ -78,7 +78,7 @@ export default class EventListenerHelper {
       onceWrapperListener = (e) => {
         listener(e);
         // remove listener
-        // listener is null to extract the listener information registered with listenerName
+        // listener is null to extract the listener definition registered with listenerName
         this.removeEventListener(eventTarget, eventType, null, optionsClone);
       };
     }
@@ -92,23 +92,23 @@ export default class EventListenerHelper {
     } else {
       eventTarget.addEventListener(eventType, listener, optionsClone);
     }
-    let listenerMapForEle = this.listeners.get(eventTarget);// returns Map
-    if (!listenerMapForEle) {
-      listenerMapForEle = new Map();
-      this.listeners.set(eventTarget, listenerMapForEle);
+    let evTypeListenersMap = this.evTargetListenersMap.get(eventTarget);// returns Map
+    if (!evTypeListenersMap) {
+      evTypeListenersMap = new Map();
+      this.evTargetListenersMap.set(eventTarget, evTypeListenersMap);
     }
-    let listenerFuncsForName = listenerMapForEle.get(eventType);// returns Map
-    if (!listenerFuncsForName) {
-      listenerFuncsForName = new Map();
-      listenerMapForEle.set(eventType, listenerFuncsForName);
+    let listenerDefs = evTypeListenersMap.get(eventType);// returns Map
+    if (!listenerDefs) {
+      listenerDefs = new Map();
+      evTypeListenersMap.set(eventType, listenerDefs);
     }
 
     if (listenerName !== null) {
       // listenerName not equals null
-      if (listenerFuncsForName.has(listenerName)) {
+      if (listenerDefs.has(listenerName)) {
         throw Error(`The listenerName "${listenerName}" is already used for the specified event type ${eventType}`);
       }
-      listenerFuncsForName.set(listenerName,
+      listenerDefs.set(listenerName,
         {
           listener,
           onceListener: onceWrapperListener,
@@ -123,7 +123,7 @@ export default class EventListenerHelper {
         optionsClone = {};
       }
       optionsClone.listenerName = randomListenerName;
-      listenerFuncsForName.set(randomListenerName,
+      listenerDefs.set(randomListenerName,
         {
           listener,
           onceListener: onceWrapperListener,
@@ -177,7 +177,6 @@ export default class EventListenerHelper {
    * @returns {}
    */
   removeEventListener(eventTarget, eventType, listener, options) {
-    // console.log(`removeEventListener ${JSON.stringify(options)}`);
     if (arguments.length < 3) {
       throw Error('Three or four arguments are required.');
     }
@@ -191,29 +190,29 @@ export default class EventListenerHelper {
       message: 'unknown error',
     };
 
-    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
-    if (!listenerMapForEle) {
+    const evTypeListenersMap = this.evTargetListenersMap.get(eventTarget);// returns map
+    if (!evTypeListenersMap) {
       result.message = `DOM element ${eventTarget}(id=${eventTarget.id}) doesn't have any listeners.`;
       return result;
     }
-    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
-    if (!listenerFuncsForName) {
+    const listenerDefs = evTypeListenersMap.get(eventType);// returns map
+    if (!listenerDefs) {
       result.message = `DOM element ${eventTarget}(id=${eventTarget.id}) doesn't have "${eventType}" listeners.`;
       return result;
     }
 
     if (listenerName) {
-      const listenerInfo = listenerFuncsForName.get(listenerName);
-      if (!listenerInfo) {
+      const listenerDef = listenerDefs.get(listenerName);
+      if (!listenerDef) {
         result.message = `DOM element ${eventTarget}(id=${eventTarget.id}) doesn't have "${eventType}" listener "${listenerName}"`;
         return result;
       }
-      listenerFuncsForName.delete(listenerName);
+      listenerDefs.delete(listenerName);
 
       if (options && options.callbackOnce) {
-        eventTarget.removeEventListener(eventType, listenerInfo.onceListener, options);
+        eventTarget.removeEventListener(eventType, listenerDef.onceListener, options);
       } else {
-        eventTarget.removeEventListener(eventType, listenerInfo.listener, options);
+        eventTarget.removeEventListener(eventType, listenerDef.listener, options);
       }
       result.success = true;
     } else if (!listenerName) {
@@ -222,14 +221,13 @@ export default class EventListenerHelper {
         const searchVal = listener;
         // The specified listener object is stored as part of the map value.
         // Gets the map key to search for that map value.
-        const resultListenerName = this._searchKeyInValueContent(listenerFuncsForName, searchKey, searchVal);
+        const resultListenerName = this._searchKeyInValueContent(listenerDefs, searchKey, searchVal);
         if (resultListenerName) {
-          const storedListenerInfo = listenerFuncsForName.get(resultListenerName);
-          // const storedListener = storedListenerInfo.listener;
-          const storedOnceListener = storedListenerInfo.onceListener;
-          const storedOptions = storedListenerInfo.options;
+          const storedListenerDef = listenerDefs.get(resultListenerName);
+          const storedOnceListener = storedListenerDef.onceListener;
+          const storedOptions = storedListenerDef.options;
 
-          listenerFuncsForName.delete(resultListenerName);
+          listenerDefs.delete(resultListenerName);
           // Whether the listener is registered.
           // Listeners not registered with this method are not deleted
           if (storedOnceListener) {
@@ -340,19 +338,19 @@ export default class EventListenerHelper {
 
   _getEventListenersWith1Arg(eventTarget) {
     const result = [];
-    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
-    if (!listenerMapForEle) {
+    const evTypeListenersMap = this.evTargetListenersMap.get(eventTarget);// returns map
+    if (!evTypeListenersMap) {
       return result;
     }
-    for (const [eventType, listenerFuncsForName] of listenerMapForEle) {
-      const listenerInfoOfEventType = [];
-      for (const listenerInfo of listenerFuncsForName.values()) {
-        listenerInfoOfEventType.push(this._getUserFriendlyListenerInfo(listenerInfo));
+    for (const [eventType, listenerDefs] of evTypeListenersMap) {
+      const frozenListenerDefs = [];
+      for (const listenerDef of listenerDefs.values()) {
+        frozenListenerDefs.push(this._getFrozenListenerDef(listenerDef));
       }
 
-      if (listenerInfoOfEventType.length > 0) {
-        // evnetType:eventType,listeners:listenerInfoOfEventType
-        result.push({ eventType, listeners: listenerInfoOfEventType });
+      if (frozenListenerDefs.length > 0) {
+        // evnetType:eventType,listeners:listenerDefOfEventType
+        result.push({ eventType, listeners: frozenListenerDefs });
       }
     }
     return result;
@@ -364,18 +362,18 @@ export default class EventListenerHelper {
       throw Error('Only two arguments can be specified');
     }
     const result = [];
-    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
-    if (!listenerMapForEle) {
+    const evTypeListenersMap = this.evTargetListenersMap.get(eventTarget);// returns map
+    if (!evTypeListenersMap) {
       return result;
     }
-    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
-    if (!listenerFuncsForName) {
+    const listenerDefs = evTypeListenersMap.get(eventType);// returns map
+    if (!listenerDefs) {
       return result;
     }
-    for (const listenerInfo of listenerFuncsForName.values()) {
-      // Converts an internal listenerInfo to a user-friendly listenerInfo
-      const resListenerInfo = this._getUserFriendlyListenerInfo(listenerInfo);
-      result.push(resListenerInfo);
+    for (const listenerDef of listenerDefs.values()) {
+      // Converts an internal listenerDef to a user-friendly listenerDef
+      const frozenListenerDef = this._getFrozenListenerDef(listenerDef);
+      result.push(frozenListenerDef);
     }
     return result;
   }
@@ -401,18 +399,18 @@ export default class EventListenerHelper {
     if (arguments.length !== 3) {
       throw Error('Only 3 arguments can be specified');
     }
-    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
-    if (!listenerMapForEle) {
+    const evTypeListenersMap = this.evTargetListenersMap.get(eventTarget);// returns map
+    if (!evTypeListenersMap) {
       return null;
     }
-    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
-    if (!listenerFuncsForName) {
+    const listenerDefs = evTypeListenersMap.get(eventType);// returns map
+    if (!listenerDefs) {
       return null;
     }
-    const listenerInfo = listenerFuncsForName.get(listenerName);
-    // Converts an internal listenerInfo to a user-friendly listenerInfo
-    const result = this._getUserFriendlyListenerInfo(listenerInfo);
-    return result;
+    const listenerDef = listenerDefs.get(listenerName);
+    // Converts an internal listenerDef to a user-friendly listenerDef
+    const frozenListenerDef = this._getFrozenListenerDef(listenerDef);
+    return frozenListenerDef;
   }
 
 
@@ -429,12 +427,12 @@ export default class EventListenerHelper {
     if (arguments.length !== 2) {
       throw Error('Only two arguments can be specified');
     }
-    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
-    if (!listenerMapForEle) {
+    const evTypeListenersMap = this.evTargetListenersMap.get(eventTarget);// returns map
+    if (!evTypeListenersMap) {
       return false;
     }
-    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
-    if (!listenerFuncsForName || listenerFuncsForName.size === 0) {
+    const listenerDefs = evTypeListenersMap.get(eventType);// returns map
+    if (!listenerDefs || listenerDefs.size === 0) {
       return false;
     }
     return true;
@@ -460,34 +458,34 @@ export default class EventListenerHelper {
     if (arguments.length !== 3) {
       throw Error('Only 3 arguments can be specified');
     }
-    const listenerMapForEle = this.listeners.get(eventTarget);// returns map
-    if (!listenerMapForEle) {
+    const evTypeListenersMap = this.evTargetListenersMap.get(eventTarget);// returns map
+    if (!evTypeListenersMap) {
       return false;
     }
-    const listenerFuncsForName = listenerMapForEle.get(eventType);// returns map
-    if (!listenerFuncsForName) {
+    const listenerDefs = evTypeListenersMap.get(eventType);// returns map
+    if (!listenerDefs) {
       return false;
     }
-    const listenerInfo = listenerFuncsForName.get(listenerName);
-    if (listenerInfo) {
+    const listenerDef = listenerDefs.get(listenerName);
+    if (listenerDef) {
       return true;
     }
     return false;
   }
 
 
-  _getUserFriendlyListenerInfo(listenerInfo) {
-    // Converts an internal listenerInfo to a user-friendly listenerInfo
+  _getFrozenListenerDef(listenerDef) {
+    // Converts an internal listenerDef to a user-friendly listenerDef
     // For example, the callbackOnce used internally will be converted to an once as if the user had specified it.
-    if (!listenerInfo) {
+    if (!listenerDef) {
       return null;
     }
-    const resListenerInfo = {};
+    const resListenerDef = {};
     let optionsRes = null;
-    const optionsOrg = listenerInfo.options;
+    const optionsOrg = listenerDef.options;
     if (optionsOrg) {
       optionsRes = {};
-      resListenerInfo.options = optionsRes;
+      resListenerDef.options = optionsRes;
       if (optionsOrg.capture) {
         optionsRes.capture = optionsOrg.capture;
       }
@@ -498,12 +496,22 @@ export default class EventListenerHelper {
         optionsRes.listenerName = optionsOrg.listenerName;
       }
     }
-    resListenerInfo.listener = listenerInfo.listener;
+    resListenerDef.listener = listenerDef.listener;
     Object.freeze(optionsRes);
-    Object.freeze(resListenerInfo);
-    return resListenerInfo;
+    Object.freeze(resListenerDef);
+    return resListenerDef;
   }
 
+
+  /**
+   * Removes all registered events through the addEventListener method.
+   */
+  clearAllEventListeners() {
+    const eventTargets = this.getAllEventTargets();
+    for (const eventTarget of eventTargets) {
+      this.clearEventListeners(eventTarget);
+    }
+  }
 
   /**
    * Remove all listeners matching the specified eventTarget and eventType (optional).
@@ -558,7 +566,53 @@ export default class EventListenerHelper {
    */
   clearEventListener(eventTarget, eventType, listenerName) {
     const listenerDef = this.getEventListener(eventTarget, eventType, listenerName);
-    this.removeEventListener(eventTarget, eventType, null, listenerDef.options);
+    if (listenerDef && listenerDef.options) {
+      this.removeEventListener(eventTarget, eventType, null, listenerDef.options);
+    }
+  }
+
+  /**
+   * Get all registered eventTargets through the #addEventListener method.
+   * @returns {}
+   */
+  getAllEventTargets() {
+    return Array.from(this.evTargetListenersMap.keys());
+  }
+
+  /**
+   * Get all listeners(listener definition) with a given listenerName.
+   Since listeners need only be unique to the eventTarget and eventType,
+   it is possible to have the same listenerName for different eventTargets and eventTypes.
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
+   * @param {String} listenerName The listener name of the listener you want to find
+   * @returns {}
+   * <code><pre>[ { options: { listenerName: 'my-test-listener' },
+        listener: [Function: func] },
+   { options: { capture: true, listenerName: 'my-test-listener' },
+        listener: [Function: func] },
+   { options: { once: true, listenerName: 'my-test-listener' },
+        listener: [Function: func] },
+   { options: { once: true, listenerName: 'my-test-listener' },
+        listener: [Function: func] } ]
+   </pre></code>
+   */
+  searchEventListenersByName(listenerName) {
+    const result = [];
+    const eventTargets = this.getAllEventTargets();
+    for (const eventTarget of eventTargets) {
+      const evTypeListenersMap = this.evTargetListenersMap.get(eventTarget);// returns Map
+      const eventTypes = evTypeListenersMap.keys();
+      for (const eventType of eventTypes) {
+        const listenerDefs = evTypeListenersMap.get(eventType);// returns Map
+        const frozenListenerDef = this._getFrozenListenerDef(listenerDefs.get(listenerName));
+        if (frozenListenerDef) {
+          result.push(frozenListenerDef);
+        }
+      }
+    }
+    return result;
   }
 
   _searchKeyInValueContent(map, searchKey, searchValue) {
@@ -571,7 +625,6 @@ export default class EventListenerHelper {
   }
 
   _checkTypeOfOptions(options) {
-    // console.log(`_checkTypeOfOptions ${typeof options}`)
     if (typeof options === 'object' || typeof options === 'undefined') {
       // no error
       return;

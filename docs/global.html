@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="EventListenerHelper.html">EventListenerHelper</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#addEventListener">addEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#removeEventListener">removeEventListener</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#getEventListener">getEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#getEventListeners">getEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#hasEventListener">hasEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#hasEventListeners">hasEventListeners</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="EventListenerHelper.html">EventListenerHelper</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#addEventListener">addEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#clearEventListener">clearEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#clearEventListeners">clearEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#getEventListener">getEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#getEventListeners">getEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#hasEventListener">hasEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#hasEventListeners">hasEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#removeEventListener">removeEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#searchEventListenersByName">searchEventListenersByName</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#clearAllEventListeners">clearAllEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#getAllEventTargets">getAllEventTargets</a></span></li>
 </nav>
 
 <div id="main">
@@ -117,16 +117,14 @@
 
     
 
-    <h4 class="name" id="getEventListener"><span class="type-signature"></span>getEventListener<span class="signature">(eventTarget, eventType, listenerName)</span><span class="type-signature"> &rarr; {function}</span></h4>
+    <h4 class="name" id="clearAllEventListeners"><span class="type-signature"></span>clearAllEventListeners<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Get a listener with the specified eventTarget, eventType and listenerName.
-   The listenerName must be unique for one eventTarget and eventType combination,
-   but it does not have to be unique for different eventTargets or different eventTypes.
+    Removes all registered events through the addEventListener method.
 </div>
 
 
@@ -162,7 +160,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line156">line 156</a>
+        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line509">line 509</a>
     </li></ul></dd>
     
 
@@ -181,109 +179,6 @@
 
 
 
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>eventTarget</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>EventTarget</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
-  <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>eventType</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>String</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>listenerName</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>String</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The listener name of the listener you want to find
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
 
 
 
@@ -295,33 +190,6 @@
 
 
 
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>function</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    Returns null if no listener function is found
-</div>
-
-    
-</div>
 
 
 
@@ -332,15 +200,14 @@
 
     
 
-    <h4 class="name" id="getEventListeners"><span class="type-signature"></span>getEventListeners<span class="signature">(eventTarget, eventType<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="getAllEventTargets"><span class="type-signature"></span>getAllEventTargets<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Get a listener definition matching the specified eventTarget and eventType (optional).
-Please note that the return value is immutable.
+    Get all registered eventTargets through the #addEventListener method.
 </div>
 
 
@@ -376,7 +243,7 @@ Please note that the return value is immutable.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line91">line 91</a>
+        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line578">line 578</a>
     </li></ul></dd>
     
 
@@ -395,105 +262,6 @@ Please note that the return value is immutable.
 
 
 
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>eventTarget</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>EventTarget</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
-  <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>eventType</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>String</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
 
 
 
@@ -510,449 +278,6 @@ Please note that the return value is immutable.
 <h5>Returns:</h5>
 
         
-
-
-<div class="param-desc">
-    Example of the returned value when only eventTarget is specified:<br><code><pre>
-   [
-   {
-      eventType:click,
-      listener:[
-         {
-            listener:func,
-            options:{
-               listenerName:my-test-listener-1
-            }
-         },
-         {
-            listener:func,
-            options:{
-               capture:true,
-               listenerName:my-test-listener-2
-            }
-         }
-      ]
-   },
-   {
-      eventType:mousemove,
-      listener:[
-         {
-            listener:func,
-            options:{
-               once:true,
-               listenerName:my-test-listener-3
-            }
-         }
-      ]
-   }
-   ]
-   </pre></code>
-   <br>
-   Example of returned value when eventType is also specified as an argument:<br><code><pre>
-   [
-   {
-      options:{
-         listenerName:my-test-listener-1
-      },
-      listener:func1
-   },
-   {
-      options:{
-         capture:true,
-         listenerName:my-test-listener-2
-      },
-      listener:func2
-   },
-   {
-      options:{
-         once:true,
-         listenerName:my-test-listener-3
-      },
-      listener:func3
-   }
-   ]
-   </pre></code>
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="hasEventListener"><span class="type-signature"></span>hasEventListener<span class="signature">(eventTarget, eventType, listenerName)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Returns whether a listenerName exists for the specified eventTarget and eventType.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line209">line 209</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>eventTarget</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>EventTarget</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>
-  <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p>
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>eventType</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>String</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for.
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>listenerName</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>String</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The listener name of the listener you want to find
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="hasEventListeners"><span class="type-signature"></span>hasEventListeners<span class="signature">(eventTarget, eventType)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Returns whether or not there are more than one event listener for the given eventTarget and eventType.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="event-listener-helper.js.html">event-listener-helper.js</a>, <a href="event-listener-helper.js.html#line181">line 181</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>eventTarget</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>eventType</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
 
 
     
@@ -979,7 +304,7 @@ Please note that the return value is immutable.
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Tue Mar 24 2020 00:43:05 GMT+0900 (東京 (標準時)) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Wed Mar 25 2020 22:04:23 GMT+0900 (東京 (標準時)) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
