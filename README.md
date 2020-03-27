@@ -78,6 +78,8 @@ npm install event-listener-helper
 
 # API Details
 
+[JSDoc here](https://riversun.github.io/event-listener-helper/docs/EventListenerHelper.html)
+
 <a name="EventListenerHelper"></a>
 
 ## EventListenerHelper
