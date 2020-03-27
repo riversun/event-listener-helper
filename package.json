@@ -1,14 +1,22 @@
 {
-  "name": "@riversun/event-listener-helper",
-  "version": "1.0.0",
+  "name": "event-listener-helper",
+  "version": "1.0.1",
   "description": "This library allows you to get a list of event listeners attached to the target node, confirms the existence of event listener registered on the target node, deletes all event listeners registered on the target node, registers event listeners with listener name (rather than a reference).",
+  "keywords": [
+    "addEventListener",
+    "removeEventListener",
+    "getEventListeners",
+    "hasEventListener",
+    "event listener",
+    "EventTarget"
+  ],
   "main": "lib/event-listener-helper.js",
   "scripts": {
     "start": "webpack-dev-server --config webpack.config.js",
     "start:node": "node example/example-run-on-node-js.js",
     "build": "webpack --config webpack.config.js",
     "release:library": "webpack --config webpack.config.js --mode production",
-    "release": "run-s test:coverage docs release:library",
+    "release": "run-s test docs release:library",
     "test": "jest -i",
     "docs": "run-s jsdoc jsdoc2md",
     "jsdoc": "npx jsdoc src/event-listener-helper.js -d docs -t node_modules/minami",
