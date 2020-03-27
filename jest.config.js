@@ -10,5 +10,7 @@ module.exports = {
   ],
   transformIgnorePatterns: [
     "node_modules/(?!(@riversun/event-emitter)/)"
-  ]
+  ],
+  "coverageDirectory": "./coverage/",
+  "collectCoverage": true
 };
