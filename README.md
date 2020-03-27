@@ -12,6 +12,8 @@
   
   These benefits can be received by calling **addEventListener** and **removeEventListener** via this library.
   
+  MIT License
+  
 # Examples
 
 - Add **named** event listener to the button element
@@ -71,7 +73,7 @@ npm install event-listener-helper
 - **use `<script>` tag**  from CDN
 
 ```html
- <script src="https://cdn.jsdelivr.net/npm/event-listener-helper@1.0.1/lib/event-listener-helper.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/event-listener-helper/lib/event-listener-helper.js"></script>
 ```
 
 # API Details
