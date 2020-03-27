@@ -217,6 +217,93 @@ describe('ListenerManager', () => {
       }, 100);
 
     });
+
+    test('Remove once listeners', () => {
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+
+      const listenerName = 'my-test-listener';
+      const options = { listenerName, once: true };
+
+      //remove by clearAllEventListeners
+      {
+        lm.addEventListener(btn, 'click', (event) => {
+          throw Error(`Once listener survived 1`);
+        }, options);
+        lm.clearAllEventListeners();
+        btn.click();
+      }
+
+      {
+        lm.addEventListener(btn, 'click', (event) => {
+          throw Error(`Once listener survived 2`);
+        }, options);
+        lm.clearEventListeners(btn);
+        btn.click();
+      }
+
+      {
+        lm.addEventListener(btn, 'click', (event) => {
+          throw Error(`Once listener survived 3`);
+        }, options);
+        lm.clearEventListeners(btn, 'click');
+        btn.click();
+      }
+
+      {
+        lm.addEventListener(btn, 'click', (event) => {
+          throw Error(`Once listener survived 4`);
+        }, options);
+        lm.clearEventListener(btn, 'click', 'my-test-listener');
+        btn.click();
+      }
+
+      {
+        const options2 = { listenerName: 'my-test-listener-2', once: true };
+
+        const listener2 = (event) => {
+          throw Error(`Once listener survived 5`);
+        };
+        lm.addEventListener(btn, 'click', listener2, options2);
+        lm.clearEventListener(btn, 'click', 'my-test-listener-2');
+        btn.click();
+      }
+
+      {
+        const options3 = { listenerName: 'my-test-listener-3', once: true };
+
+        const listener3 = (event) => {
+          throw Error(`Once listener survived 6`);
+        };
+        lm.addEventListener(btn, 'click', listener3, options3);
+        lm.removeEventListener(btn, 'click', listener3, { listenerName: 'my-test-listener-3' });
+        btn.click();
+      }
+
+      {
+        const options4 = { listenerName: 'my-test-listener-4', once: true };
+
+        const listener4 = (event) => {
+          throw Error(`Once listener survived 7`);
+        };
+        lm.addEventListener(btn, 'click', listener4, options4);
+        lm.removeEventListener(btn, 'click', listener4);
+        btn.click();
+      }
+
+      {
+        const options5 = { listenerName: 'my-test-listener-5', once: true };
+
+        const listener5 = (event) => {
+          throw Error(`Once listener survived 8`);
+        };
+        lm.addEventListener(btn, 'click', listener5, options5);
+        lm.removeEventListener(btn, 'click', null, { listenerName: 'my-test-listener-5' });
+        btn.click();
+      }
+    });
+
     test('Check illegal options type:string', () => {
       const lm = new EventListenerHelper();
       createHTMLForListenerManager();

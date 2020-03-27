@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="EventListenerHelper.html">EventListenerHelper</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#addEventListener">addEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#clearEventListener">clearEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#clearEventListeners">clearEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#getEventListener">getEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#getEventListeners">getEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#hasEventListener">hasEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#hasEventListeners">hasEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#removeEventListener">removeEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#searchEventListenersByName">searchEventListenersByName</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#clearAllEventListeners">clearAllEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#getAllEventTargets">getAllEventTargets</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="EventListenerHelper.html">EventListenerHelper</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#addEventListener">addEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#clearAllEventListeners">clearAllEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#clearEventListener">clearEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#clearEventListeners">clearEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#getAllEventTargets">getAllEventTargets</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#getEventListener">getEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#getEventListeners">getEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#hasEventListener">hasEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#hasEventListeners">hasEventListeners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#removeEventListener">removeEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="EventListenerHelper.html#searchEventListenersByName">searchEventListenersByName</a></span></li>
 </nav>
 
 <div id="main">
@@ -250,10 +250,10 @@ export default class EventListenerHelper {
       }
       listenerDefs.delete(listenerName);
 
-      if (options &amp;&amp; options.callbackOnce) {
-        eventTarget.removeEventListener(eventType, listenerDef.onceListener, options);
+      if (listenerDef.options &amp;&amp; listenerDef.options.callbackOnce) {
+        eventTarget.removeEventListener(eventType, listenerDef.onceListener, listenerDef.options);
       } else {
-        eventTarget.removeEventListener(eventType, listenerDef.listener, options);
+        eventTarget.removeEventListener(eventType, listenerDef.listener, listenerDef.options);
       }
       result.success = true;
     } else if (!listenerName) {
@@ -546,6 +546,9 @@ export default class EventListenerHelper {
 
   /**
    * Removes all registered events through the addEventListener method.
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
    */
   clearAllEventListeners() {
     const eventTargets = this.getAllEventTargets();
@@ -614,6 +617,9 @@ export default class EventListenerHelper {
 
   /**
    * Get all registered eventTargets through the #addEventListener method.
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
    * @returns {}
    */
   getAllEventTargets() {
@@ -695,7 +701,7 @@ export default class EventListenerHelper {
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Wed Mar 25 2020 22:04:23 GMT+0900 (東京 (標準時)) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Mar 27 2020 16:38:23 GMT+0900 (東京 (標準時)) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

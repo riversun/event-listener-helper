@@ -209,10 +209,10 @@ export default class EventListenerHelper {
       }
       listenerDefs.delete(listenerName);
 
-      if (options && options.callbackOnce) {
-        eventTarget.removeEventListener(eventType, listenerDef.onceListener, options);
+      if (listenerDef.options && listenerDef.options.callbackOnce) {
+        eventTarget.removeEventListener(eventType, listenerDef.onceListener, listenerDef.options);
       } else {
-        eventTarget.removeEventListener(eventType, listenerDef.listener, options);
+        eventTarget.removeEventListener(eventType, listenerDef.listener, listenerDef.options);
       }
       result.success = true;
     } else if (!listenerName) {
@@ -505,6 +505,9 @@ export default class EventListenerHelper {
 
   /**
    * Removes all registered events through the addEventListener method.
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
    */
   clearAllEventListeners() {
     const eventTargets = this.getAllEventTargets();
@@ -573,6 +576,9 @@ export default class EventListenerHelper {
 
   /**
    * Get all registered eventTargets through the #addEventListener method.
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
    * @returns {}
    */
   getAllEventTargets() {

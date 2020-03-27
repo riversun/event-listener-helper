@@ -10,7 +10,6 @@
     "release:library": "webpack --config webpack.config.js --mode production",
     "release": "run-s test:coverage docs release:library",
     "test": "jest -i",
-    "test:coverage": "npm run test -- --coverage",
     "docs": "run-s jsdoc jsdoc2md",
     "jsdoc": "npx jsdoc src/event-listener-helper.js -d docs -t node_modules/minami",
     "jsdoc2md": "jsdoc2md src/event-listener-helper.js > api.md"

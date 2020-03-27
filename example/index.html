@@ -8,7 +8,97 @@
     <meta name="author" content="riversun">
 </head>
 <body>
-<button id="myButton">MyButton</button>
-<button id="myButton2">MyButton2</button>
+<h1>Example of event-listener-helper</h1>
+
+<h4>addEventListener/removeEventListener/hasEventListeners</h4>
+<button id="myButton">Click me</button>
+<br><br>
+<button id="myButton2">Remove listener on 'Click me' button</button>
+<br><br>
+<button id="myButton3">Add new listener to "Click me" button</button>
+<br>
+<hr>
+<h4>getEventListeners</h4>
+
+<button id="myButton4">Click me to call multiple listeners</button>
+<br>
+<div id="dispArea1"></div>
+<br>
+<button id="myButton5">Show all registered listeners</button>
+<br>
+<div id="dispArea2"></div>
+<br>
+<hr>
+<h4>clearAllEventListeners</h4>
+
+<button id="myButton6">Clear all registered listeners</button>
+<br><br>
+
+<script src="event-listener-helper.js"></script>
+<script>
+  const eh = new EventListenerHelper();
+
+  const btn1 = document.querySelector('#myButton');
+  eh.addEventListener(btn1, 'click', () => {
+    alert('Clicked');
+  }, { listenerName: 'my-listener' });
+
+  const btn2 = document.querySelector('#myButton2');
+  eh.addEventListener(btn2, 'click', () => {
+    //remove listener by name
+    eh.removeEventListener(btn1, 'click', null, { listenerName: 'my-listener' });
+    alert('The event listener has been removed from the "Click me" button.');
+  }, { listenerName: 'my-listener-2' });
+
+  const btn3 = document.querySelector('#myButton3');
+  eh.addEventListener(btn3, 'click', () => {
+    if (eh.hasEventListeners(btn1, 'click')) {
+      alert('Event listeners are already registered on "Click me" button.');
+    } else {
+      // If no event listener is registered on 'btn1', register a listener.
+      eh.addEventListener(btn1, 'click', () => {
+        alert('A new event listener has been clicked!');
+      }, { listenerName: 'my-listener-3' });
+
+      alert('A new event listener has been added to the "Clicked me" button, which is already in place.');
+    }
+  });
+
+
+  const btn4 = document.querySelector('#myButton4');
+  const dispArea1 = document.querySelector('#dispArea1');
+
+  eh.addEventListener(btn4, 'click', () => {
+    dispArea1.innerHTML += 'No.1 listener clicked<br>';
+  }, { listenerName: 'btn4-listener' });
+  eh.addEventListener(btn4, 'click', () => {
+    dispArea1.innerHTML += 'No.2 listener clicked(once listener)<br>';
+  }, { once: true });
+  eh.addEventListener(btn4, 'click', () => {
+    dispArea1.innerHTML += 'No.3 listener clicked<br>';
+  });
+
+
+  const btn5 = document.querySelector('#myButton5');
+  const dispArea2 = document.querySelector('#dispArea2');
+
+  eh.addEventListener(btn5, 'click', () => {
+    const listenerDefs = eh.getEventListeners(btn4, 'click');
+    dispArea2.innerHTML = '';
+    for (const listenerDef of listenerDefs) {
+      const disp = JSON.stringify(listenerDef,
+        (k, v) => (typeof v === 'function') ? v.toString().replace(/\n/g, '') : v);
+      dispArea2.innerHTML += `${disp}<br>`;
+    }
+  });
+
+
+  const btn6 = document.querySelector('#myButton6');
+  eh.addEventListener(btn6, 'click', () => {
+    eh.clearAllEventListeners();
+    alert('Cleared all event listeners');
+  });
+
+</script>
 </body>
 </html>
