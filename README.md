@@ -1,8 +1,8 @@
 # event-listener-helper
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/02b5f97b330840848458d73104574810)](https://app.codacy.com/manual/riversun/event-listener-helper?utm_source=github.com&utm_medium=referral&utm_content=riversun/event-listener-helper&utm_campaign=Badge_Grade_Dashboard)
 [![npm version](https://badge.fury.io/js/event-listener-helper.svg)](https://badge.fury.io/js/event-listener-helper)
-[![codecov](https://codecov.io/gh/riversun/event-listener-helper/branch/master/graph/badge.svg)](https://codecov.io/gh/riversun/event-listener-helper)
 [![CircleCI](https://circleci.com/gh/riversun/event-listener-helper.svg?style=shield)](https://circleci.com/gh/riversun/event-listener-helper)
+[![codecov](https://codecov.io/gh/riversun/event-listener-helper/branch/master/graph/badge.svg)](https://codecov.io/gh/riversun/event-listener-helper)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/02b5f97b330840848458d73104574810)](https://app.codacy.com/manual/riversun/event-listener-helper?utm_source=github.com&utm_medium=referral&utm_content=riversun/event-listener-helper&utm_campaign=Badge_Grade_Dashboard)
 
   This library allows you to:  
   - Get a list of event listeners attached to the target node
