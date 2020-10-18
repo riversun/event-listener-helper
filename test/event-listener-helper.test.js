@@ -376,6 +376,25 @@ describe('ListenerManager', () => {
       }, 100);
     });
 
+    test('arg error', () => {
+
+      const lm = new EventListenerHelper();
+      createHTMLForListenerManager();
+      const btn = document.querySelector('#myButton');
+
+      const listenerName = 'my-test-listener';
+      const options = {};
+      options.listenerName = listenerName;
+
+      lm.addEventListener(btn, 'click', () => {
+        throw new Error('Listener is not removed!');
+      }, options);
+
+      expect(() => {
+        lm.removeEventListener(btn, 'click', options)
+      }).toThrowError('Type of 3rd arg should be a');
+
+    });
     test('remove named listener', (done) => {
 
       const lm = new EventListenerHelper();

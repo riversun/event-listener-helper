@@ -179,6 +179,10 @@ export default class EventListenerHelper {
     if (arguments.length < 3) {
       throw Error('Three or four arguments are required.');
     }
+    if (!(this.typeOf(listener) === 'Function' || this.typeOf(listener) === 'Null')) {
+      throw Error('Type of 3rd arg should be a "Function" or "Null".');
+    }
+
     this._checkTypeOfOptions(options);
     let listenerName = null;
     if (options && options.listenerName) {
@@ -661,5 +665,9 @@ export default class EventListenerHelper {
 
   _cloneJson(value) {
     return JSON.parse(JSON.stringify(value));
+  }
+
+  typeOf(obj) {
+    return Object.prototype.toString.call(obj).slice(8, -1);
   }
 }
