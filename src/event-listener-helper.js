@@ -136,7 +136,6 @@ export default class EventListenerHelper {
     return result;
   }
 
-
   /**
    * The EventListenerHelper#removeEventListener method removes from the EventTarget an event listener previously registered with EventListenerHelper#addEventListener.
    The event listener to be removed is identified using option.
@@ -335,6 +334,25 @@ export default class EventListenerHelper {
     return this._getEventListenersWith2Args(eventTarget, eventType);
   }
 
+  /**
+   * Returns all event listeners as a Map object
+   *
+   * You can get listeners for "inputElement" 's "click" event by map chain like below.
+   * const listeners=result.get(inputElement).get('click');
+   */
+  getAllEventListeners() {
+    const resultMap = new Map();
+    this.evTargetListenersMap.forEach((mapValue, mapKey) => {
+      const eventTarget = mapKey;
+      const listenersForEventTarget = this._getEventListenersWith1Arg(eventTarget);
+      const eventTypeListenersMap = new Map();
+      resultMap.set(eventTarget, eventTypeListenersMap);
+      for (const listenerData of listenersForEventTarget) {
+        eventTypeListenersMap.set(listenerData.eventType, listenerData.listeners);
+      }
+    });
+    return resultMap;
+  }
 
   _getEventListenersWith1Arg(eventTarget) {
     const result = [];
@@ -355,7 +373,6 @@ export default class EventListenerHelper {
     }
     return result;
   }
-
 
   _getEventListenersWith2Args(eventTarget, eventType) {
     if (arguments.length !== 2) {
@@ -412,7 +429,6 @@ export default class EventListenerHelper {
     const frozenListenerDef = this._getFrozenListenerDef(listenerDef);
     return frozenListenerDef;
   }
-
 
   /**
    * Returns whether or not there are more than one event listener for the given eventTarget and eventType.
@@ -473,7 +489,6 @@ export default class EventListenerHelper {
     return false;
   }
 
-
   _getFrozenListenerDef(listenerDef) {
     // Converts an internal listenerDef to a user-friendly listenerDef
     // For example, the callbackOnce used internally will be converted to an once as if the user had specified it.
@@ -501,7 +516,6 @@ export default class EventListenerHelper {
     Object.freeze(resListenerDef);
     return resListenerDef;
   }
-
 
   /**
    * Removes all registered events through the addEventListener method.

@@ -1,3 +1,20 @@
+## Classes
+
+<dl>
+<dt><a href="#EventListenerHelper">EventListenerHelper</a></dt>
+<dd></dd>
+</dl>
+
+## Functions
+
+<dl>
+<dt><a href="#getAllEventListeners">getAllEventListeners()</a></dt>
+<dd><p>Returns all event listeners as a Map object</p>
+<p>You can get listeners for &quot;inputElement&quot; &#39;s &quot;click&quot; event by map chain like below.
+const listeners=result.get(inputElement).get(&#39;click&#39;);</p>
+</dd>
+</dl>
+
 <a name="EventListenerHelper"></a>
 
 ## EventListenerHelper
@@ -232,3 +249,12 @@ Get all listeners(listener definition) with a given listenerName.
 | --- | --- | --- |
 | listenerName | <code>String</code> | The listener name of the listener you want to find |
 
+<a name="getAllEventListeners"></a>
+
+## getAllEventListeners()
+Returns all event listeners as a Map object
+
+You can get listeners for "inputElement" 's "click" event by map chain like below.
+const listeners=result.get(inputElement).get('click');
+
+**Kind**: global function  

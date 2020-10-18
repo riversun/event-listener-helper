@@ -678,6 +678,8 @@ describe('ListenerManager', () => {
       expect(lm.getEventListener(btn2, 'mouseover', 'my-test-listener-4').options.once).toBe(true);
     });
   });
+
+
   ///getEventListeners///////////////////////////////////////////
 
   describe('getEventListeners() 1 arg', () => {
@@ -876,6 +878,48 @@ describe('ListenerManager', () => {
       expect(btnMouseMoveListeners.length).toBe(0);
 
     });
+  });
+
+  ///getAllEventListeners///////////////////////////////////////////
+  describe('getAllEventListeners()', () => {
+    const lm = new EventListenerHelper();
+    createHTMLForListenerManager();
+    const btn = document.querySelector('#myButton');
+    const btn2 = document.querySelector('#myButton2');
+
+    const options = { listenerName: 'my-test-listener-1' };
+    const func1 = () => {
+      return options.listenerName;
+    };
+    lm.addEventListener(btn, 'click', func1, options);
+
+    const options2 = { listenerName: 'my-test-listener-2', capture: true };
+    const func2 = () => {
+      return options2.listenerName;
+    };
+    lm.addEventListener(btn, 'click', func2, options2);
+
+    const options3 = { listenerName: 'my-test-listener-3' };
+    const func3 = () => {
+      return options3.listenerName;
+    };
+    lm.addEventListener(btn2, 'click', func3, options3);
+
+
+    const allListeners = lm.getAllEventListeners();
+    const clickListenerFuncsOnBtn = allListeners.get(btn).get('click');
+    const clickListenerFuncsOnBtn2 = allListeners.get(btn2).get('click');
+
+    expect(clickListenerFuncsOnBtn.length === 2);
+    expect(clickListenerFuncsOnBtn[0].listener).toBe(func1);
+    expect(clickListenerFuncsOnBtn[0].options.listenerName).toBe('my-test-listener-1');
+    expect(clickListenerFuncsOnBtn[1].listener).toBe(func2);
+    expect(clickListenerFuncsOnBtn[1].options.listenerName).toBe('my-test-listener-2');
+    expect(clickListenerFuncsOnBtn[1].options.capture).toBe(true);
+    expect(clickListenerFuncsOnBtn2.length === 1);
+    expect(clickListenerFuncsOnBtn2[0].listener).toBe(func3);
+    expect(clickListenerFuncsOnBtn2[0].options.listenerName).toBe('my-test-listener-3');
+
   });
 
   ///hasEventListeners///////////////////////////////////////////
