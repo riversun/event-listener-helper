@@ -335,10 +335,11 @@ export default class EventListenerHelper {
   }
 
   /**
-   * Returns all event listeners as a Map object
-   *
-   * You can get listeners for "inputElement" 's "click" event by map chain like below.
-   * const listeners=result.get(inputElement).get('click');
+   * You can get listeners for "inputElement" 's "click" event by map chain.
+   * @memberof EventListenerHelper
+   * @instance
+   * @method
+   * @returns {} const listeners=result.get(inputElement).get('click');
    */
   getAllEventListeners() {
     const resultMap = new Map();

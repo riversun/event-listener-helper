@@ -1,6 +1,6 @@
 {
   "name": "event-listener-helper",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "This library allows you to get a list of event listeners attached to the target node, confirms the existence of event listener registered on the target node, deletes all event listeners registered on the target node, registers event listeners with listener name (rather than a reference).",
   "keywords": [
     "addEventListener",

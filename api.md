@@ -1,20 +1,3 @@
-## Classes
-
-<dl>
-<dt><a href="#EventListenerHelper">EventListenerHelper</a></dt>
-<dd></dd>
-</dl>
-
-## Functions
-
-<dl>
-<dt><a href="#getAllEventListeners">getAllEventListeners()</a></dt>
-<dd><p>Returns all event listeners as a Map object</p>
-<p>You can get listeners for &quot;inputElement&quot; &#39;s &quot;click&quot; event by map chain like below.
-const listeners=result.get(inputElement).get(&#39;click&#39;);</p>
-</dd>
-</dl>
-
 <a name="EventListenerHelper"></a>
 
 ## EventListenerHelper
@@ -26,6 +9,7 @@ const listeners=result.get(inputElement).get(&#39;click&#39;);</p>
     * [.addEventListener(eventTarget, eventType, listener, [options])](#EventListenerHelper+addEventListener) ⇒
     * [.removeEventListener(eventTarget, eventType, [listener], [options])](#EventListenerHelper+removeEventListener) ⇒
     * [.getEventListeners(eventTarget, [eventType])](#EventListenerHelper+getEventListeners) ⇒
+    * [.getAllEventListeners()](#EventListenerHelper+getAllEventListeners) ⇒
     * [.getEventListener(eventTarget, eventType, listenerName)](#EventListenerHelper+getEventListener) ⇒ <code>function</code>
     * [.hasEventListeners(eventTarget, eventType)](#EventListenerHelper+hasEventListeners) ⇒ <code>boolean</code>
     * [.hasEventListener(eventTarget, eventType, listenerName)](#EventListenerHelper+hasEventListener) ⇒ <code>boolean</code>
@@ -148,6 +132,13 @@ Please note that the return value is immutable.
 | eventTarget | <code>EventTarget</code> | EventTarget is a DOM interface implemented by objects that can receive events and may have listeners for them.<br>   <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget">EventTarget</a> by <a class="new" rel="nofollow" title="Page has not yet been created.">Mozilla Contributors</a> is licensed under <a class="external" href="http://creativecommons.org/licenses/by-sa/2.5/" rel="noopener">CC-BY-SA 2.5</a>.</p> |
 | [eventType] | <code>String</code> | A case-sensitive string representing the <a href="/en-US/docs/Web/Events">event type</a> to listen for. |
 
+<a name="EventListenerHelper+getAllEventListeners"></a>
+
+### eventListenerHelper.getAllEventListeners() ⇒
+You can get listeners for "inputElement" 's "click" event by map chain.
+
+**Kind**: instance method of [<code>EventListenerHelper</code>](#EventListenerHelper)  
+**Returns**: const listeners=result.get(inputElement).get('click');  
 <a name="EventListenerHelper+getEventListener"></a>
 
 ### eventListenerHelper.getEventListener(eventTarget, eventType, listenerName) ⇒ <code>function</code>
@@ -249,12 +240,3 @@ Get all listeners(listener definition) with a given listenerName.
 | --- | --- | --- |
 | listenerName | <code>String</code> | The listener name of the listener you want to find |
 
-<a name="getAllEventListeners"></a>
-
-## getAllEventListeners()
-Returns all event listeners as a Map object
-
-You can get listeners for "inputElement" 's "click" event by map chain like below.
-const listeners=result.get(inputElement).get('click');
-
-**Kind**: global function  
